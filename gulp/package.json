@@ -1,0 +1,21 @@
+{
+    "name": "gulp",
+    "version": "1.0.0",
+    "description": "Summary Of Gulp...",
+    "keywords": [
+        "gulp",
+        "summary"
+    ],
+    "main": "gulpfile.js",
+    "dependencies": {
+        "gulp": "^3.9.1",
+        "gulp-uglify": "^3.0.0",
+        "gulp-livereload": "^3.8.1"
+    },
+    "devDependencies": {},
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "lixiaohan",
+    "license": "ISC"
+}
