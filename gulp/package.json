@@ -7,12 +7,12 @@
         "summary"
     ],
     "main": "gulpfile.js",
-    "dependencies": {
+    "dependencies": {},
+    "devDependencies": {
         "gulp": "^3.9.1",
         "gulp-uglify": "^3.0.0",
         "gulp-livereload": "^3.8.1"
     },
-    "devDependencies": {},
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },
