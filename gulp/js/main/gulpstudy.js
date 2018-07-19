@@ -1,3 +1,8 @@
+console.log(`Burgdoggen lorem enim sunt, labore tri-tip pork loin shoulder chicken quis minim proident laborum adipisicing.
+In fatback brisket sint laborum in proident capicola.
+Et rump lorem esse commodo, turkey duis.
+Culpa ut shankle pork chop landjaeger deserunt ham hock sausage sunt ground round turkey.
+Venison aute ham, sint quis shank kevin alcatra culpa adipisicing do capicola ad.`);
 /*
     gulp 基于管道的思想...测试、检查、合并、压缩、格式化、浏览器自动刷新、部署文件生成...
     --->通过 src 读取文件产生数据流

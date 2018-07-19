@@ -1,3 +1,7 @@
+console.log(`Ea anim beef ribs minim.
+Burgdoggen tempor pork belly sed nulla cow pig et aute.
+Pork chop qui corned beef, ground round ad adipisicing pastrami.
+Biltong beef pig picanha, doner nostrud bresaola.`);
 /*
     gulp 基于管道的思想...测试、检查、合并、压缩、格式化、浏览器自动刷新、部署文件生成...
     --->通过 src 读取文件产生数据流

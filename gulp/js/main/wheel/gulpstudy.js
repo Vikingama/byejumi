@@ -1,3 +1,9 @@
+console.log(`Spicy jalapeno bacon ipsum dolor amet turducken shank veniam cow.
+Aliquip short ribs shoulder, cow est labore cillum dolore strip steak shank ad turkey burgdoggen.
+Exercitation ipsum ea, id fugiat short ribs pig pork loin jerky corned beef labore meatloaf sausage.
+Lorem sunt eiusmod capicola turkey.
+Sed pork loin fugiat ground round pork ut, biltong id et laborum elit excepteur voluptate ut beef.
+Dolore laboris burgdoggen ipsum tri-tip. T-bone meatloaf id velit venison.`);
 /*
     gulp 基于管道的思想...测试、检查、合并、压缩、格式化、浏览器自动刷新、部署文件生成...
     --->通过 src 读取文件产生数据流
