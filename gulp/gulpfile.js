@@ -8,7 +8,7 @@ var gulp = require("gulp"),
     filter = require('gulp-filter'),
     // 压缩 js
     uglify = require("gulp-uglify"),
-    // 生成版本号
+    // 生成版本号 ---> 放在压缩后
     revall = require("gulp-rev-all"),
     // 替换引用
     useref = require("gulp-useref"),
@@ -18,24 +18,38 @@ gulp.task("del", function () {
     // 构建前先删除 dist 文件里的旧版本...
     del("./dist/*");
 });
-gulp.task("build", ["del"], function () {
-    var htmlFilter = filter("./html/*.html", { restore: true });
-    var cssFilter = filter("./css/*.css", { restore: true });
-    var jsFilter = filter("./js/**/*.js", { restore: true });
-    gulp.src("./html/*")
-        .pipe(useref())
-        .pipe(jsFilter)
+gulp.task("jsCompress", function () {
+    gulp.src("./js/**/*.js")
         .pipe(uglify())
-        .pipe(jsFilter.restore)
-        .pipe(cssFilter)
-        .pipe(csso())
-        .pipe(cssFilter.restore)
-        .pipe(revall.revision({
-            dontRenameFile: [".html"],
-            dontUpdateReference: [".html"]
-        }))
-        .pipe(htmlFilter)
-        .pipe(minify())
-        .pipe(htmlFilter.restore)
-        .pipe(gulp.dest("./dist"));
+        .pipe(gulp.dest("./dist/js"));
 });
+gulp.task("jsRevision", ["jsCompress"], function () {
+    gulp.src("./dist/js/**/*.js")
+        .pipe(revall.revision({
+            dontUpdateReference: [".html", ".png", ".jpg"]
+        }))
+        .pipe(gulp.dest("./dist/js"));
+});
+gulp.task("cssCompress", function () {
+    gulp.src("./css/**/*.css")
+        .pipe(csso())
+        .pipe(gulp.dest("./dist/css"));
+});
+gulp.task("cssRevision", ["cssCompress"], function () {
+    gulp.src("./dist/css/**/*.css")
+        .pipe(revall.revision({
+            dontUpdateReference: [".html", ".png", ".jpg"]
+        }))
+        .pipe(gulp.dest("./dist/css"));
+});
+gulp.task("htmlRevision", ["cssRevision", "jsRevision"], function () {
+    gulp.src("./html/**/*.html")
+        .pipe(useref())
+        .pipe(gulp.dest("./dist/html"));
+});
+gulp.task("htmlCompress", ["htmlRevision"], function () {
+    gulp.src("./dist/html/*.html")
+        .pipe(minify())
+        .pipe(gulp.dest("./dist/html"));
+});
+gulp.task("build", ["del", "cssCompress", "cssRevision", "jsCompress", "jsRevision"]);
