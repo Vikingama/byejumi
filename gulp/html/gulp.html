@@ -6,9 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>gulpStudy</title>
-    <!-- build:css ../css/gulp.css -->
-    <link rel="stylesheet" href="../css/gulp.css">
-    <!-- endbuild -->
 </head>
 
 <body>
@@ -29,11 +26,6 @@
         </p>
     </div>
 </body>
-<!-- build:js ../js/index.js -->
-<script src="../js/main/main.js"></script>
-<script src="../js/main/whee/whee.js"></script>
-<script src="../js/settin/settin.js"></script>
-<!-- endbuild -->
 <script>
     /*
         gulp 基于管道的思想...测试、检查、合并、压缩、格式化、浏览器自动刷新、部署文件生成...
@@ -44,8 +36,6 @@
     */
     // 一一引用，一一加载...
     var gulp = require("gulp"),
-        // 自动刷新浏览器...
-        livereload = require('gulp-livereload'),
         uglify = require('gulp-uglify');
     /*
         使用 gulp-load-plugins 模块，可以加载 package.json 文件中所有的 gulp 模块...
@@ -67,6 +57,8 @@
                 // one 完成之后...
             });
             gulp.task("default", ["one", "two"]);
+            // 执行 gulp 任务
+            gulp.run(taskName);
         */
     });
     /*
@@ -76,12 +68,11 @@
             .pipe(jade())
             .pipe(minify())
             .pipe(
-                gulp.dest('build/minifiedTemplates')
+                gulp.dest('build/miniTemplates')
             );
-        watch 方法用于指定需要监视符合所提供的匹配模式或者匹配模式的数组的文件。
-        一旦这些文件发生变动，就运行指定任务。
+        watch 方法用于指定需要监视符合所提供的匹配模式或者匹配模式的数组的文件，一旦这些文件发生变动，就运行指定任务。
         gulp.watch(glob, function () {
-        // 任务代码/函数
+            // 任务代码/函数
         })
     */
     gulp.task("js", ["css"], function () {
