@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>微信开发</title>
+    <title>BASIC</title>
     <style>
         * {
             font-size: 14px;
@@ -36,7 +36,7 @@
         <li>通过 code 换取网页授权 access_token...</li>
         <li>通过网页授权 access_token 和 OpenID 获取用户基本信息...</li>
     </ul>
-    <hr> https://open.weixin.qq.com/connect/oauth2/authorize?appid=&redirect_uri=&response_type=&scope=&state=#wechat_redirect
+    <hr> (用户同意授权，获取 code)https://open.weixin.qq.com/connect/oauth2/authorize?appid=&redirect_uri=&response_type=&scope=&state=#wechat_redirect
     <ul>
         <li>appid：必填，公众号的唯一标识</li>
         <li>redirect_uri：必填，授权后重定向的回调链接地址， 需要使用 urlEncode 对链接进行处理</li>
@@ -44,6 +44,25 @@
         <li>scope：必填，应用授权作用域，snsapi_base / snsapi_userinfo</li>
         <li>state：选填，重定向后会带上 state 参数，开发者可以填写 a-zA-Z0-9 的参数值，最多 128 字节</li>
         <li>#wechat_redirect：必填，无论直接打开还是重定向时候，必须带此参数</li>
+    </ul>
+    <hr> (通过 code 换取网页授权 access_token)https://api.weixin.qq.com/sns/oauth2/access_token?appid=APPID&secret=SECRET&code=CODE&grant_type=authorization_code
+    <ul>
+        <li>appid：必填，公众号的唯一标识</li>
+        <li>secret：必填，公众号的 appsecret</li>
+        <li>code：必填，第一步获取的 code 参数</li>
+        <li>grant_type：必填，填写为 authorization_code</li>
+    </ul>
+    <hr> (刷新 access_token)https://api.weixin.qq.com/sns/oauth2/refresh_token?appid=APPID&grant_type=refresh_token&refresh_token=REFRESH_TOKEN
+    <ul>
+        <li>appid：必填，公众号的唯一标识</li>
+        <li>grant_type：必填，填写为 refresh_token</li>
+        <li>refresh_token：必填，填写通过 access_token 获取到的 refresh_token 参数</li>
+    </ul>
+    <hr> (拉取用户信息，需scope 为 snsapi_userinfo)https://api.weixin.qq.com/sns/userinfo?access_token=ACCESS_TOKEN&openid=OPENID&lang=zh_CN
+    <ul>
+        <li>access_token：网页授权接口调用凭证，此 access_token 与基础支持的 access_token 不同</li>
+        <li>openid：用户的唯一标识</li>
+        <li>lang：返回国家地区语言版本</li>
     </ul>
 </body>
 
