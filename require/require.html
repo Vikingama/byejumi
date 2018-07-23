@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>require.js</title>
+</head>
+
+<body>
+    require.js ---> 代码模块化，使用 moduleID 替代 URL...
+    <hr> baseUrl ---> 加载代码的相对地址，如果没有配置，则默认为包含 require.js 的那个 HTML 所属的路径...
+    <hr> require.js 默认加载的为 JS 资源，无需在 moduleID 后加上 .js 后缀...
+    <hr> 如果一个 module ID 符合以下条件，其 ID 解析会避开 baseUrl + path 的配置：
+    <ul>
+        <li>以 .js 结束</li>
+        <li>以 "/" 开始</li>
+        <li>包含 URL 协议, 如 "http:" 或 "https:"</li>
+    </ul>
+    <hr>
+    <hr>
+    <hr>
+    <hr>
+    <hr>
+    <hr>
+    <hr>
+    <hr>
+    <hr>
+</body>
+<!-- data-main 属性告诉 require.js 在加载完成之后加载 index.js（异步） -->
+<script data-main="./script/index.js" src="./script/require.js"></script>
+<!-- 同步加载 -->
+<script src="./script/other.js"></script>
+<script>
+    console.log("i am inner.js");
+</script>
+
+</html>
