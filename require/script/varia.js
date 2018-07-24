@@ -1,1 +1,3 @@
-return "boom shakalaka";
+define({
+    boom: "shakalaka"
+})
