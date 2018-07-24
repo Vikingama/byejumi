@@ -1,1 +1,1 @@
-// console.log("i am submix.js");
+console.log("i am submix.js");
