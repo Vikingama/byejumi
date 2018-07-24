@@ -1,4 +1,4 @@
-// console.log("i am index.js");
+console.log("i am index.js");
 requirejs.config({
     baseUrl: "script",
     paths: {
