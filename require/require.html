@@ -18,7 +18,7 @@
         <li>以 "/" 开始</li>
         <li>包含 URL 协议, 如 "http:" 或 "https:"</li>
     </ul>
-    <hr>
+    <hr> require.js 使用 head.appendChild() 将每一个依赖加载为一个 script 标签；等待所有的依赖加载完毕，计算出模块定义函数正确调用顺序，然后依次调用它们...
     <hr>
     <hr>
     <hr>
@@ -29,13 +29,18 @@
     <hr>
 </body>
 <!-- data-main 属性告诉 require.js 在加载完成之后加载 index.js（异步） -->
-<script src="https://cdn.bootcss.com/require.js/2.3.5/require.min.js" data-main="./script/index.js"></script>
+<!-- <script src="https://cdn.bootcss.com/require.js/2.3.5/require.min.js" data-main="./script/index.js"></script> -->
+<script src="https://cdn.bootcss.com/require.js/2.3.5/require.min.js"></script>
+<!-- data-main 属性真坑爹，会偷偷改写 baseUrl 为当前目录，不推荐使用... -->
+<script src="./script/index.js"></script>
 <!-- 同步加载 -->
 <script src="./script/other.js"></script>
 <script>
-	console.log("outter require area");
-    requirejs(['jquery', 'main', 'submix'], function ($, main, submix) {
+    console.log("outter require area");
+    require(['jquery', 'main', 'submix', 'plugin/p1'], function ($, main, submix, p1) {
         console.log("inner require area");
+        // jquery、main、submix 加载顺序不能确定，异步加载...
+        console.log(p1);
     });
 </script>
 
