@@ -1,9 +1,9 @@
-console.log("i am index.js");
-require.config({
+// console.log("i am index.js");
+requirejs.config({
     baseUrl: "script",
     paths: {
-        jquery: "https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js",
-        main: "main/main.js",
-        submix: "submix/submix.js"
+        jquery: "//cdn.bootcss.com/jquery/3.3.1/jquery.min.js",
+        main: "main/main",
+        submix: "submix/submix",
     }
 });
