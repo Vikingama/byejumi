@@ -42,6 +42,9 @@ require.config({
     config: {
         "plugin/p4": {
             apiKey: "5fg4fd5gt5fedf5g45drt5"
+        },
+        i18n: {
+            locale: "zh-cn"
         }
     },
     // 从 Common JS 包中加载模块...
