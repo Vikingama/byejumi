@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>puzzle</title>
+</head>
+
+<body>
+    <h3>语句优先</h3>
+    当 {} 既可以被理解为"复合语句块"也可以被理解为"对象直接量"或"函数声明"的时候，JavaScript 将会将其理解成为复合语句块...
+    <hr> []+[] => ""
+    <hr> {}+{} => "[object Object][object Object]"
+    <hr> []+{} => "[object Object]"
+    <hr> {}+[] => {};+[] => 0
+    <hr> console.log({}+[]) => 括号中的语句被当作表达式，{} 不能被理解为语句块 => console.log("[object Object]"+"") => [object Object]
+</body>
+
+</html>
