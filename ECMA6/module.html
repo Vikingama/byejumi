@@ -77,6 +77,33 @@
 
         }))
     */
+
+    var event = document.createEvent("Event");
+    event.initEvent("begin", true, true)
+
+    function f1() {
+        console.log("f1 begin...");
+        setTimeout(function () {
+            // 异步变成 ---> 回调函数
+            f3();
+        }, 3000);
+    }
+    document.addEventListener("begin", function () {
+        f2();
+    }, false);
+
+    function f2() {
+        console.log("f2 begin...");
+    }
+
+    function f3() {
+        console.log("f3 begin...");
+        setTimeout(function () {
+            // 异步编程 ---> 事件触发
+            document.dispatchEvent(event);
+        }, 3000);
+    }
+    f1();
 </script>
 
 </html>
