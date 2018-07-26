@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>extend of string</title>
+</head>
+
+<body>
+        JavaScript 内部，字符以 UTF-16 的格式储存，每个字符固定为 2 个字节。对于那些需要 4 个字节储存的字符（Unicode 码点大于 0xFFFF 的字符），JavaScript 会认为它们是两个字符...
+</body>
+<script>
+    console.log('\u{1F680}' === '\uD83D\uDE80');
+    var a = "\u0061";
+    console.log(a); // a
+    var ABC = "\u{41}\u{42}\u{43}";
+    console.log(ABC);
+    console.log("hell\u{6F}");
+    console.log("\z" === "z"); // true
+    console.log("\172" === "z"); // true
+    console.log("\x7A" === "z"); // true
+    console.log("\u007A" === "z"); // true
+    console.log("\u{7A}" === "z"); // true
+    var c = "𠮷";
+    console.log({
+        length: c.length, // 2
+        "charAt(0)":c.charAt(0),
+        "charAt(1)":c.charAt(1),
+        "charCodeAt(0)":c.charCodeAt(0), // 55362
+        "charCodeAt(1)":c.charCodeAt(1) // 57271
+    })
+</script>
+
+</html>
