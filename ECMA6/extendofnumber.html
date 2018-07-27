@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>extend of number</title>
+</head>
+
+<body>
+
+</body>
+<script>
+    /*
+    ES6 将全局方法 parseInt() 和 parseFloat()，移植到 Number 对象上面，行为完全保持不变，使代码模块化：
+        parseInt()、parseFloat() ===> Number.parseInt()、Number.ParseFloat()
+    Number.isFinite() --- 一个数值是否为有限的，如果参数类型不是数值，一律返回 false...
+    Number.isNaN() --- 一个值是否为 NaN，如果参数类型不是 NaN，一律返回false...
+    与 isFinite() 和 isNaN() 的区别：
+        传统方法先调用 Number() 将非数值的值转为数值，再进行判断，而这两个新方法"只对"数值有效...
+    */
+    console.log(isFinite("20")); // true
+    console.log(Number.isFinite("20")); // false
+    console.log(Number.isFinite(20)); // true
+    console.log(isNaN("NaN")); // true
+    console.log(Number.isNaN("NaN")); // false
+    console.log(Number.isNaN(NaN)); // true
+    // Number.isInteger() --- 判断一个数值是否为整数...
+    console.log(Number.isInteger(20)); // true
+    console.log(Number.isInteger("20")); // false
+    console.log(Number.isInteger(20.0)); // true
+    console.log(Number.isInteger("20.0")); // false
+    console.log(Number.isInteger(20.1)); // false
+    console.log(Number.isInteger(null)); // false
+</script>
+
+</html>
