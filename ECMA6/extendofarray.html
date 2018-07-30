@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>extend of array</title>
+</head>
+
+<body>
+    <div></div>
+    <div></div>
+    <div></div>
+</body>
+<script>
+    // 扩展运算符，好比 rest 参数的逆运算，将数组转为用逗号分隔的参数序列...
+    console.log(...[1, 2, 3]); // 1 2 3
+    console.log(...document.querySelectorAll("div")); // <div></div> <div></div> <div></div>
+    function add(x, y) {
+        return x + y;
+    }
+    console.log(add(...[1, 2])); // 3
+    function pushArr(array, ...items) {
+        array.push(...items);
+    }
+    var arr = [];
+    pushArr(arr, 1, 2, 3, 4, 5, 6);
+    console.log(arr); // [1, 2, 3, 4, 5, 6]
+    console.log([...[], 1, ...[2, 3]]); // [1, 2, 3]
+    // 扩展运算符可用来替代 apply...
+    console.log(Math.max.apply(null, [1, 5, 9, 3, 5, 7])); // 9
+    console.log(Math.max(...[1, 5, 9, 3, 5, 7])); // 9
+    console.log(Math.max(1, 5, 9, 3, 5, 7)); // 9
+    var arr1 = [1, 5, 9],
+        arr2 = [3, 5, 7],
+        arr3 = [2, 5, 8];
+
+    Array.prototype.push.apply(arr1, arr2);
+    console.log(arr1); // [1, 5, 9, 3, 5, 7]
+    arr1.push(...arr3);
+    console.log(arr1); // [1, 5, 9, 3, 5, 7, 2, 5, 8]
+    let a1 = [1, 2, 3, 4, 5],
+        a2, a3;
+    a2 = [...a1];
+    [...a3] = a1;
+    a1[2] = 0;
+    console.log(a1); // [1, 2, 0, 4, 5]
+    console.log(a2); // [1, 2, 3, 4, 5]
+    console.log(a3); // [1, 2, 3, 4, 5]
+    // 使用扩展运算符合并数组...
+    var o1 = [{
+            name: "ooo"
+        }],
+        o2 = [{
+            age: 24
+        }];
+    let o3 = [...o1, ...o2]; // 浅复制...
+    let o4 = o1.concat(o2); // 浅复制...
+    o1[0].name = 'lll';
+    console.log(o3); // [{name: "lll"}, {age: 24}]
+    console.log(o4); // [{name: "lll"}, {age: 24}]
+    console.log([..."HELLO"]); // ["H", "E", "L", "L", "O"]
+</script>
+
+</html>
