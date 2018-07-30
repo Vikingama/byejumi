@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>extend of function</title>
+</head>
+
+<body>
+
+</body>
+<script>
+    function defaVa(x, y = 'World') {
+        // 参数变量是默认声明的，不能用 let 或 const 再次声明...
+        console.log(x + ' ' + y);
+    };
+    defaVa('Hello'); // Hello World
+    defaVa('Hello', ''); // Hello
+    defaVa('Hi', 'Linda'); // Hi Linda
+    try {
+        // function worry(x, x, y, y = 10) {
+        //     // 报错
+        // }
+    } catch (error) {
+        console.log(error)
+    } finally {
+        function right(x, x, y, y) {
+            // 不报错
+        }
+    }
+    let x = 100;
+    function woo(p = x + 1) {
+        console.log(p);
+        x++;
+    }
+    woo(); // 101
+    woo(); // 102
+    function resove({ x, y = 5 } = {}) {
+        // x 默认值为 undefined...
+        console.log(x, y);
+    }
+    resove(); // undefined, 5
+    resove({}); // undefined, 5
+    resove(5); // undefined, 5
+    resove({ x: 10, y: 10 }); // 10, 10
+</script>
+
+</html>
