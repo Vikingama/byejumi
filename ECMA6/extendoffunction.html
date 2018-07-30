@@ -31,20 +31,82 @@
         }
     }
     let x = 100;
+
     function woo(p = x + 1) {
         console.log(p);
         x++;
     }
     woo(); // 101
     woo(); // 102
-    function resove({ x, y = 5 } = {}) {
+    function resove({
+        x,
+        y = 5
+    } = {}) {
         // x 默认值为 undefined...
         console.log(x, y);
     }
     resove(); // undefined, 5
     resove({}); // undefined, 5
     resove(5); // undefined, 5
-    resove({ x: 10, y: 10 }); // 10, 10
+    resove({
+        x: 10,
+        y: 10
+    }); // 10, 10
+    // 函数设定默认值后，length 属性将失真(length 原本指函数预期传入的参数个数)...
+    console.log(defaVa.length); // 1
+    console.log(resove.length); // 0
+    {
+        let x = 10;
+        // 一旦设置了参数的默认值，函数进行声明初始化时，参数会形成一个单独的作用域；等到初始化结束，这个作用域才消失...
+        function f1(x, y = x) {
+            console.log(x, y); // 100 100
+        }
+        f1(100);
+        console.log(x); // 10
+        let z = 10;
+
+        function f2(c = z) {
+            let z = 20;
+            console.log(z, c); // 20 100
+        }
+        f2(100);
+        console.log(z); // 10
+    }
+    let touch = "outer";
+    // 函数参数形成的单独作用域里面，并没有定义变量 touch，所以 touch 指向外层的全局变量 touch...
+    function barz(funz = () => touch) {
+        let touch = 'inner';
+        console.log(funz());
+    }
+    barz(); // outer
+    (function () {
+        var x = 1; // 第一层作用域
+
+        function foo(x, y = function () {
+            x = 2; // 第二层作用域 ---> 指向同为参数的 foo 的形参 x
+            console.log(x); // 2
+        }) {
+            var x = 3; // 第三层作用域
+            y();
+            console.log(x); // 3
+        }
+        foo();
+        console.log(x); // 1
+        console.log("－O－");
+        var xx = 1; // 第一层作用域
+
+        function oxo(xx, yy = function () {
+            xx = 2; // 第二层作用域 ---> 
+            console.log(xx); // 2
+        }) {
+            xx = 3; // 第二层作用域
+            yy();
+
+            console.log(xx); // 2
+        }
+        oxo();
+        console.log(xx); // 1
+    })()
 </script>
 
 </html>
