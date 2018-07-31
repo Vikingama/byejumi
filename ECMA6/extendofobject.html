@@ -140,6 +140,27 @@
     console.log(p2);
     console.log(p2.say()); // Jessica
     console.log(p2.find()); // Simpson
+    /*
+    Object.keys() --- 返回一个数组，成员是参数对象自身的（不含继承的）所有可枚举的键名...
+    Object.values() --- 返回一个数组，成员是参数对象自身的（不含继承的）所有可枚举的键值...
+    Object.entries() --- 返回一个数组，成员是参数对象自身的（不含继承的）所有可枚举的键值对数组...
+    */
+    console.log(Object.entries({
+        foo: "bar",
+        bar: "foo"
+    })); // [["foo", "bar"], ["bar", "foo"]]
+    let {
+        x,
+        y,
+        ...z
+    } = {
+        x: 1,
+        y: 1,
+        a: 1,
+        b: 1,
+        c: 1
+    };
+    console.log(z); // {a: 1, b: 1, c: 1}
 </script>
 
 </html>
