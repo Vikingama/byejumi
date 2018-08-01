@@ -69,7 +69,11 @@
     console.log(Object.keys(b)); // ["mains"]
     console.log(Object.getOwnPropertySymbols(b)); // [Symbol(), Symbol()]
     console.log(Reflect.ownKeys(b)); // ["mains", Symbol(), Symbol()]
-    // 由于 Symbol 值作为名称的属性不会被常规的方法遍历到 ===> 为对象定义一些非私有的、只用于对象内部的方法...
+    console.log(Symbol.for("ora") === Symbol.for("ora")); // true
+    let kf1 = Symbol.for("kf1"),
+        kf2 = Symbol("kf2");
+    console.log(Symbol.keyFor(kf1)); // kf1
+    console.log(Symbol.keyFor(kf2)); // undefined
 </script>
 
 </html>
