@@ -93,6 +93,52 @@
     console.log(example(1, 2)); // 12
     console.log(new example(1, 2, 3)); // {value: 2}
     console.log(example.taste); // HELLO TASTE
+    let validator = {
+        set(obj, prop, value) {
+            if (prop == "age") {
+                if (!Number.isInteger(value)) {
+                    throw new Error('The age is not an integer');
+                }
+                if (value > 200) {
+                    throw new Error('The age seems invalid');
+                }
+            }
+            obj[prop] = value;
+        }
+    };
+    let person = new Proxy({}, validator);
+    try {
+        person.age = "teenager";
+    } catch (error) {
+        console.log(error);
+    } finally {
+        person.age = 100;
+        console.log(person);
+    }
+    var fncs = function () {
+        return "fncs";
+    }
+    var deal = {
+        apply() {
+            return "not fncs";
+        }
+    }
+    var pipi = new Proxy(fncs, deal);
+    console.log(fncs()); // fncs
+    console.log(pipi()); // not fncs
+    function sum(x, y) {
+        return x + y;
+    }
+    var double = {
+        apply(target, ctx, args) {
+            // ctx --- this 的指向...
+            console.log(target, ctx, args); // sum、undefined、[1, 2]
+            return Reflect.apply(...arguments) * 2;
+        }
+    }
+    var app = new Proxy(sum, double);
+    console.log(app(1, 2)); // 6
+    console.log(app.call(null, 1, 2));
 </script>
 
 </html>
