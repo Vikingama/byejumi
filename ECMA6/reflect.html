@@ -191,6 +191,43 @@ Reflect.apply(Math.floor, undefined, [1.75]) // 1
             console.log(error); // TypeError
         }
     }
+    /*
+    Reflect.apply(func, thisArg, args) --- 绑定 this 对象后执行给定的函数 --- Function.prtotype.apply.call(func, thisArg, args)...
+    如果要绑定一个函数的 this 对象，可以这样写 fn.apply(obj, args)，但是如果函数定义了自己的 apply 方法，就只能写成 Function.prototype.apply.call(fn, obj, args)...
+    */
+    const ages = [11, 55, 99, 79, 46, 13];
+    console.log(Math.min.apply(null, ages)); // 11
+    console.log(Reflect.apply(Math.max, null, ages)); // 99
+    // Reflect.defineProperty() --- 基本等同于 Object.defineProperty()...
+    function MyDate() {}
+    Object.defineProperty(MyDate, "now+1", {
+        value: () => Date.now() + 1
+    });
+    Reflect.defineProperty(MyDate, "now-1", {
+        value: () => Date.now() - 1
+    });
+    console.log(new MyDate());
+    /*
+    Reflect.getOwnPropertyDescriptor() 基本等同于 Object.getOwnPropertyDescriptor() --- 得到指定属性的描述对象...
+    Reflect.isExtensible() 对应 Object.isExtensible() --- 返回一个布尔值，表示当前对象是否可扩展...
+    Reflect.preventExtensions() 对应 Object.preventExtensions() --- 让一个对象变为不可扩展，返回一个布尔值，表示是否操作成功...
+    Reflect.ownKeys() 基本等同于 Object.getOwnPropertyNames() 与 Object.getOwnPropertySymbols() 之和...
+    */
+    let ofo = {
+        foo: 1,
+        bar: 2,
+        [Symbol.for('tiz')]: 3,
+        [Symbol.for('uno')]: 4,
+    }
+    Reflect.defineProperty(ofo,"foo",{
+        enumerable:false,
+        writable:false
+    });
+    console.log(Reflect.getOwnPropertyDescriptor(ofo,"foo"));
+    console.log(Object.isExtensible(ofo)); // true
+    Reflect.preventExtensions(ofo);
+    console.log(Reflect.isExtensible(ofo)); // false
+    console.log(Reflect.ownKeys(ofo)); // ["foo", "bar", Symbol(tiz), Symbol(uno)]
 </script>
 
 </html>
