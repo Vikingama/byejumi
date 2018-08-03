@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>event loop 2</title>
+</head>
+
+<body>
+    当我们设置一个延迟函数的时候，当前脚本并不会阻塞，它只是会在浏览器的"事件表"中进行记录，程序会继续向下执行；
+    <br> 当延迟的时间结束之后，事件表会将回调函数添加至"事件队列"中，事件队列拿到任务后便将任务压入"执行栈"中，执行栈执行任务...
+    <hr>
+</body>
+<script>
+</script>
+
+</html>
