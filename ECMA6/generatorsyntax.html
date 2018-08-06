@@ -46,8 +46,8 @@
         gxtor.next();
     }, 3000);
     var atp = [1, [
-            [2, 3], "4"
-        ],
+        [2, 3], "4"
+    ],
         [5, 6]
     ];
 
@@ -73,12 +73,72 @@
         console.log(i); // 1 [[2, 3], "4"] [5, 6]
     }
     var mit = {};
-    mit[Symbol.iterator] = function* (){
+    mit[Symbol.iterator] = function* () {
         yield 1;
         yield 2;
         yield 3;
     }
     console.log([...mit]); // [1, 2, 3]
+    // 外部向 Generator 函数内部注入值...
+    function* sample() {
+        for (var i = 0; true; i++) {
+            // yield 本身没有返回值，故一般情况，reset 为 undefined...
+            let reset = yield i;
+            // next() 方法可以带一个参数，该参数会被当做"""上一个""" yield 的返回值...
+            if (reset) {
+                i = -1;
+            }
+        }
+    }
+    var sf = sample();
+    console.log(sf);
+    console.log(sf.next()); // {value: 0, done: false}
+    console.log(sf.next()); // {value: 1, done: false}
+    console.log(sf.next()); // {value: 2, done: false}
+    // i 被重置为 -1...
+    console.log(sf.next(true)); // {value: 0, done: false}
+    function* goos(x) {
+        var y = 2 * (yield (x + 1));
+        var z = yield (y / 3);
+        return (x + y + z);
+    }
+    var es = goos(5);
+    // 5+1
+    console.log(es.next()); // {value: 6, done: false}
+    // 24/3
+    console.log(es.next(12)); // {value: 8, done: false}
+    // 5+24+13
+    console.log(es.next(13)); // {value: 42, done: true}
+    // for...of 循环可以自动遍历 Generator 函数时生成的 Iterator 对象，且不再需要调用 next 方法...
+    function* mon() {
+        yield 1;
+        yield 2;
+        yield 3;
+        return 4;
+    }
+    // 一旦 next 方法的返回对象的 done 属性为 true，for...of 循环就会中止，且不包含该返回对象...
+    for (var i of mon()) {
+        // ===> 4 不会循环出来...
+        console.log(i); // 1 2 3
+    }
+    console.log([...mon()]); // [1, 2, 3]
+    console.log(Array.from(mon())); // [1, 2, 3]
+    let [xx, yy] = mon();
+    console.log(xx, yy); // 1 2
+    // 斐波那契数列
+    function* fibonacci() {
+        let [pre, cur] = [0, 1];
+        for (; ;) {
+            yield cur;
+            [pre, cur] = [cur, pre + cur];
+        }
+    }
+    for (let n of fibonacci()) {
+        if (n > 100) {
+            break;
+        }
+        console.log(n);
+    }
 </script>
 
 </html>
