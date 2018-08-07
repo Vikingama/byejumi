@@ -46,8 +46,8 @@
         gxtor.next();
     }, 3000);
     var atp = [1, [
-        [2, 3], "4"
-    ],
+            [2, 3], "4"
+        ],
         [5, 6]
     ];
 
@@ -98,8 +98,8 @@
     // i 被重置为 -1...
     console.log(sf.next(true)); // {value: 0, done: false}
     function* goos(x) {
-        var y = 2 * (yield (x + 1));
-        var z = yield (y / 3);
+        var y = 2 * (yield(x + 1));
+        var z = yield(y / 3);
         return (x + y + z);
     }
     var es = goos(5);
@@ -128,7 +128,7 @@
     // 斐波那契数列
     function* fibonacci() {
         let [pre, cur] = [0, 1];
-        for (; ;) {
+        for (;;) {
             yield cur;
             [pre, cur] = [cur, pre + cur];
         }
@@ -138,6 +138,123 @@
             break;
         }
         console.log(n);
+    }
+    // Generator.prototype.throw --- 在函数体外抛出错误。在 Generator 函数内部捕获（需要函数内部有 try...catch）...
+    var generous = function* () {
+        try {
+            yield;
+        } catch (error) {
+            console.log("内部捕获：" + error);
+        }
+    }
+    var frank = generous();
+    frank.next(); // 要被内部捕获，前提是必须至少执行过一次 next 方法...
+    try {
+        frank.throw("a"); // 被内部捕获...
+        frank.throw("b"); // 内部 catch 捕获过之后，由外部 catch 捕获...
+        frank.throw("c"); // 没有被捕获...
+    } catch (e) {
+        console.log("外部捕获：" + e);
+    }
+    var aiji = function* () {
+        while (true) {
+            yield;
+            console.log("内部捕获：" + e);
+        }
+    }
+    var jio = aiji();
+    jio.next();
+    try {
+        jio.throw("a");
+        jio.throw("b");
+    } catch (e) {
+        console.log("外部捕获：" + e); // 外部捕获：a
+    }
+    // Generator.prototype.return --- 返回给定的值，并且终结遍历 Generator 函数...
+    function* rege() {
+        yield 1;
+        yield 2;
+        yield 3;
+    }
+    var re = rege();
+    console.log(re.next()); // {value: 1, done: false}
+    console.log(re.return()); // {value: undefined, done: true}
+    // console.log(re.return("foo")); // {value: "foo", done: true}
+    console.log(re.next()); // {value: undefined, done: true}
+    /*
+        next() --- 将 yield 表达式替换成一个值...
+        throw() --- 将 yield 表达式替换成一个 throw 语句...
+        return() --- 将 yield 表达式替换成一个 return 语句...
+    */
+    function* g1() {
+        yield "a";
+        yield "b";
+    }
+
+    function* g2() {
+        yield "x";
+        // g1(); // 没有效果，需要借助 yield* 表达式...
+        yield* g1();
+        yield "y";
+    }
+    for (let i of g2()) {
+        console.log(i); // x a b y
+    }
+
+    function* g3() {
+        yield "w";
+    }
+
+    function* g4() {
+        yield "q";
+        yield g3(); // yield 会返回一个遍历器...
+        yield "e";
+    }
+    for (let i of g4()) {
+        console.log(i); // q g3{<suspended>} e
+    }
+    const tree = ['a', ['b', 'c'],
+        ['d', ['e', 'f']]
+    ];
+
+    function* fuckTree(tree) {
+        if (Array.isArray(tree)) {
+            for (let i = 0; i < tree.length; i++) {
+                yield* fuckTree(tree[i]);
+            }
+        } else {
+            return tree;
+        }
+    }
+    for (var item of fuckTree(tree)) {
+        console.log("fuckTree: " + item); // 好像没执行...
+    }
+    var star1 = {
+        * mg() {
+
+        }
+    }
+    // 等价于...
+    var star2 = {
+        mg: function* () {}
+    }
+    // 状态机...
+    var ticking = true;
+    var clock1 = function () {
+        if (ticking) {
+            console.log("Tick...");
+        } else {
+            console.log("Tock...");
+        }!ticking;
+        // clock1();
+    }
+    var clock2 = function* () {
+        while (true) {
+            console.log("Tick...");
+            yield;
+            console.log("Tock...");
+            yield;
+        }
     }
 </script>
 
