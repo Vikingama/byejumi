@@ -32,19 +32,19 @@
     }
     asyncPrint("hello...", "3000");
     // 函数声明
-    async function sample1() {};
+    async function sample1() { };
     // 函数表达式
-    const sample2 = async function () {};
+    const sample2 = async function () { };
     // 作为对象的方法
     let objekt = {
-        async sample3() {}
+        async sample3() { }
     }
     objekt.sample3().then();
     // 箭头函数
-    const sample4 = async () => {};
+    const sample4 = async () => { };
     // 作为类的方法
     class Clazz {
-        async sample4() {}
+        async sample4() { }
     }
     // async 返回的是 Promise 对象
     async function p1() {
@@ -88,7 +88,7 @@
         e => console.log(e) // do...
     );
 
-    function doSomething() {}
+    function doSomething() { }
     async function p5() {
         /*try {
             await doSomething();
@@ -139,6 +139,70 @@
             console.log(error);
         }
     }
+    // 假定某个 DOM 元素上面，部署了一系列的动画，前一个动画结束，才能开始后一个...
+    function aniPromise(ele, animations) {
+        let ret = null, p = Promise.resolve();
+        for (let a of animations) {
+            p = p.then(function (res) {
+                ret = res;
+                return a(ele);
+            })
+        }
+        return p.catch(function (error) {
+            console.log(error);
+        }).then(function () {
+            return ret;
+        })
+    }
+    function aniGenerator(ele, animations) {
+        // spawn --- 自动执行器...
+        return spawn(function* () {
+            let ret = null;
+            try {
+                for (let a of animations) {
+                    ret = yield a(ele);
+                }
+            } catch (error) {
+                console.log(error);
+            }
+            return ret;
+        });
+    }
+    async function aniAsync(ele, animations) {
+        let ret = null;
+        try {
+            for (let a of animations) {
+                ret = await a(elem);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+        return ret;
+    }
+    // 异步遍历器 --- 调用遍历器的 next 方法，返回的是一个 Promise 对象...
+    // asyncIterator.next().then(({ value, done }) => {
+    //     /*
+    //     同步遍历器部署在 Symbol.iterator;
+    //     异步遍历器部署在 Symbol.asyncIterator...
+    //     异步遍历器与同步遍历器最终行为是一致的，只是会先返回 Promise 对象，作为中介...
+    //     */
+    // });
+    /*
+    for...of        循环同步 iterator
+    for await...of  循环异步 iterator，也可循环同步 iterator
+    */
+    // 异步 Generator 函数 --- async 函数与 Generator 函数的结合...
+    async function* gen() {
+        yield "hello";
+        yield "bye";
+    }
+    const genIter = gen();
+    genIter.next().then(v => {
+        console.log(v); // {value: "hello", done: false}
+    });
+    genIter.next().then(v => {
+        console.log(v); // {value: "bye", done: false}
+    });
 </script>
 
 </html>
