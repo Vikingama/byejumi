@@ -117,7 +117,34 @@
         // ReferenceError: Up is not defined
         console.log(error);
     }
-    class Up { };
+    // getter & setter 函数...
+    class ChunLi {
+        get prop() {
+            return "getter";
+        }
+        set prop(v) {
+            console.log("setter: " + v);
+        }
+        constructor(...args) {
+            this.args = args;
+        }
+        // 静态方法...
+        static wosa() {
+                return "okrrr...";
+            }
+            *[Symbol.iterator]() {
+                for (let item of this.args) {
+                    yield item;
+                }
+            }
+    }
+    let cl = new ChunLi("hello", "world");
+    cl.prop = "cl";
+    console.log(cl.prop);
+    for (let i of cl) {
+        console.log(i); // hello world
+    }
+    // 类的静态方法 --- 在一个方法前，加上 static 关键字，就表示该方法不会被实例继承，而是直接通过类来调用...
 </script>
 
 </html>
