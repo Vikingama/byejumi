@@ -145,6 +145,51 @@
         console.log(i); // hello world
     }
     // 类的静态方法 --- 在一个方法前，加上 static 关键字，就表示该方法不会被实例继承，而是直接通过类来调用...
+    class Staitike {
+        constructor(name) {
+            this.name = name;
+        }
+        // 类的静态方法...
+        static kai() {
+            return "kai";
+        }
+        static say() {
+            // 静态方法中的 this 指向类而非实例...
+            console.log(this);
+        }
+        // 静态方法可以与非静态方法重名
+        say() {
+            console.log(this);
+        }
+    }
+    try {
+        // 在类的实例上调用
+        console.log(new Staitike("o").kai()); // o
+    } catch (error) {
+        // TypeError: (intermediate value).kai is not a function
+        console.log(error);
+    } finally {
+        // 直接在类上调用
+        console.log(Staitike.kai());
+    }
+    console.log(Staitike.say()); // undefined
+    console.log(new Staitike("o").say()); // undefined
+    // 类的静态方法"不可以"被类的实例继承，"可以"被子类继承...
+    class Parent {
+        static m() {
+            return "static m...";
+        }
+    }
+    class Child extends Parent {
+        static n() {
+            return super.m() + "...";
+        }
+    }
+    console.log(Child.m()); // static m...
+    console.log(Child.n()); // static m......
+    // 静态属性：Class 本身的属性，即 Class.propName，而不是定义在实例对象上的属性...
+    Parent.pp = "ass";
+    console.log(Parent.pp); // ass
 </script>
 
 </html>
