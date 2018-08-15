@@ -189,7 +189,19 @@
     console.log(Child.n()); // static m......
     // 静态属性：Class 本身的属性，即 Class.propName，而不是定义在实例对象上的属性...
     Parent.pp = "ass";
+    // 目前，只有这种写法可行，因为 ES6 明确规定，Class 内部只有静态方法，没有静态属性...
     console.log(Parent.pp); // ass
+    // new.target 一般用在"构造函数"之中，返回 new 命令作用于的那个构造函数。如果构造函数不是通过 new 命令调用的，new.target 会返回 undefined...
+    function People(name) {
+        if (new.target) {
+            this.name = name;
+        } else {
+            console.error('请使用 new 操作符生成实例');
+        }
+    }
+    People("guguday");
+    let ps = new People("guguday");
+    console.log(ps.name);
 </script>
 
 </html>
