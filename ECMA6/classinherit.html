@@ -12,6 +12,74 @@
 
 </body>
 <script>
+    class Father {
+        constructor(beef) {
+            this.beef = beef;
+        }
+        say() {
+            return this.beef;
+        }
+        static how() {
+            console.log("do...");
+        }
+    }
+    // ES6 通过 extends 关键字实现继承...
+    class Son extends Father {
+        /*
+        子类在构造函数中必须调用 super 方法，否则子类会得不到 this...
+        子类自己的 this 对象，必须先通过父类的构造函数完成塑造，得到与父类同样的实例属性和方法，然后再加上子类自己的实例属性和方法...
+        */
+        constructor(fatherName, meat) {
+            // 调用父类的构造函数...
+            try {
+                // 在子类的 super 函数调用之前访问 this 对象，会报错...
+                console.log(this);
+            } catch (error) {
+                // ReferenceError
+                console.log(error);
+            }
+            // super 虽然代表了父类的构造函数，但返回的是子类的实例 / super内部的 this 指向子类...
+            super(fatherName); // Father.prototype.constructor.call(this)...
+            this.meat = meat;
+        }
+        say() {
+            // 调用父类的 say 方法...
+            return super.say() + " is " + this.meat + "'s papa...";
+        }
+    }
+    const gzj = new Son("xh", "zj");
+    console.log(gzj.say());
+    /*
+    ES5 继承的实质是先创建子类的实例对象 this，然后将父类的方法添加到 this 上...
+    ES6 继承的实质是先将父类实例对象的属性和方法加到 this 上(super 方法)，再用子类的构造函数修改 this...
+    */
+    class Daughter extends Father {
+        /*
+        如果子类中没有显式定义 constructor 方法，super 将被默认添加...
+            constructor(...args){
+                // 会被默认添加...
+                super(...args);
+            }
+        */
+    }
+    console.log(gzj instanceof Father); // true
+    console.log(gzj instanceof Son); // true
+    console.log(Son.how()); // 父类的静态方法会被子类继承...
+    console.log(Object.getPrototypeOf(Son)); // class Father
+    class Papa {
+        constructor() {
+            console.log(new.target);
+        }
+    }
+    class Babe extends Papa{
+        constructor() {
+            // 在 super 执行时，它指向的是子类的构造函数，而不是父类的构造函数...
+            super(); // 只能在子类的构造函数中调用...
+        }
+    }
+    new Papa(); // class Papa
+    new Babe(); // class Babe
+    // 当 super 作为对象时，在普通方法中指向父类，在静态方法中指向父类...
 </script>
 
 </html>
