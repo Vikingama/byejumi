@@ -176,6 +176,12 @@
     console.log(new Staitike("o").say()); // undefined
     // 类的静态方法"不可以"被类的实例继承，"可以"被子类继承...
     class Parent {
+        constructor() {
+            console.log(new.target);
+            if (new.target == Parent) {
+                console.error("本类不可实例化...");
+            }
+        }
         static m() {
             return "static m...";
         }
@@ -202,6 +208,9 @@
     People("guguday");
     let ps = new People("guguday");
     console.log(ps.name);
+    // 类中的 new.target 指向当前类；当子类继承父类时，new.target 会返回子类...
+    let father = new Parent(); // => class Parent...
+    let son = new Child(); // => class Child...
 </script>
 
 </html>
