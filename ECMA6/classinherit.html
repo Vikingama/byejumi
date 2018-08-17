@@ -71,7 +71,7 @@
             console.log(new.target);
         }
     }
-    class Babe extends Papa{
+    class Babe extends Papa {
         constructor() {
             // 在 super 执行时，它指向的是子类的构造函数，而不是父类的构造函数...
             super(); // 只能在子类的构造函数中调用...
@@ -79,7 +79,94 @@
     }
     new Papa(); // class Papa
     new Babe(); // class Babe
-    // 当 super 作为对象时，在普通方法中指向父类，在静态方法中指向父类...
+    // 当 super 作为对象时，在普通方法中指向"父类的原型对象"，在静态方法中指向"父类"...
+    class A {
+        constructor() {
+            this.age = 1;
+            this.x = "ax";
+            A.prototype.sex = "male";
+        }
+        a() {
+            return "a";
+        }
+        print() {
+            console.log(this.x);
+        }
+    }
+    class B extends A {
+        constructor() {
+            super(); // 指向子类 B 的构造函数...
+            console.log(super.a()); // 此处的 super 指向父类 A <==> A.prototype.a()...
+            this.x = "bx";
+        }
+        get b() {
+            // 普通方法中，super 指向父类的原型链，获取不到 age 属性...
+            return super.age;
+        }
+        o() {
+            return super.sex;
+        }
+        speak() {
+            // 在子类普通方法中通过 super 调用父类的方法时，方法内部的 this 指向当前的子类实例...
+            super.print(); // <==> A.prototype.print.call(this)...this 指向 B 的实例...
+            // ==> 如果通过 super 对某个属性赋值，这时 super 就是 this，赋值的属性会变成子类实例的属性...
+        }
+    }
+    let b = new B(); // a
+    console.log(b); // { age:1, b: undefined }
+    console.log(b.b); // undefined
+    console.log(b.o()); // male，从父类 A 的原型链上获取...
+    console.log(b.speak()); // bx
+    class First {
+        constructor() {
+            this.x = 1;
+        }
+    }
+    class Second extends First {
+        constructor() {
+            super();
+            this.x = 2;
+            super.x = 3; // ==> this.x = 3
+            console.log(super.x); // undefined ==> A.prototype.x
+            console.log(this.x);
+        }
+    }
+    new Second();
+    class C {
+        constructor() {
+            this.dc = "C";
+        }
+        static say(msg) {
+            console.log("static " + msg);
+        }
+        say(msg) {
+            console.log("instance " + msg);
+        }
+        speak(content) {
+            console.log(content + " " + this.dc);
+        }
+    }
+    class D extends C {
+        constructor() {
+            super();
+            this.dc = "D";
+        }
+        static say(msg) {
+            super.say(msg); // 指向父类
+        }
+        say(msg) {
+            super.say(msg); // 指向父类原型对象
+        }
+        static speak() {
+            super.speak("static");
+        }
+        speak() {
+            super.speak("instance");
+        }
+    }
+    D.say(); // static undefined
+    new D().say(); // instance undefined
+    new D().speak(); // D
 </script>
 
 </html>
