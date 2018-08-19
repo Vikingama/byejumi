@@ -167,6 +167,72 @@
     D.say(); // static undefined
     new D().say(); // instance undefined
     new D().speak(); // D
+    // prototype & __proto__
+    class Hen {
+        constructor() {
+            return "Egg...";
+        }
+    }
+    class Egg extends Hen {
+
+    }
+    // 构造函数的继承，指向父类...
+    console.log(Egg.__proto__); // class Hen
+    // 方法的继承，指向父类的 prototype...
+    console.log(Egg.prototype.__proto__);
+    class Duck extends Object {
+        /*
+        作为对象：子类的原型是父类...
+        作为构造函数：子类的原型对象是父类的原型对象的实例...
+        */
+    }
+    console.log(new Duck());
+    /*
+    原生构造函数：
+        Boolean()
+        Number()
+        String()
+        Array()
+        Date()
+        Function()
+        RegExp()
+        Error()
+        Object()
+    原生构造函数是无法继承的...
+    ES5 是先新建子类的实例对象 this，再将父类的属性添加到子类上，由于父类的内部属性无法获取，导致无法继承原生的构造函数...
+    ES6 允许继承原生构造函数定义子类，因为 ES6 是先新建父类的实例对象 this，然后再用子类的构造函数修饰 this，使得父类的所有行为都可以继承...
+    */
+    // Mixin --- 多个对象合成一个新的对象，新对象具有各个组成成员的接口...
+    const o1 = {
+        p: 1
+    }
+    const o2 = {
+        q: 2
+    }
+    // 简单的实现
+    const o3 = { ...o1, ...o2 }
+    console.log(o3); // {p: 1, q: 2}...
+    // 完备的实现
+    function mix(...mixins) {
+        class Mix { }
+        for (let mixin of mixins) {
+            copyProperties(Mix.prototype, mixin); // 拷贝实例属性
+            copyProperties(Mix.prototype, Reflect.getPrototypeOf(mixin)); // 拷贝原型属性
+        }
+        return Mix;
+    }
+    function copyProperties(to, from) {
+        for (let key of Reflect.ownKeys(from)) {
+            if (
+                key != "constructor" &&
+                key != "prototype" &&
+                key != "name"
+            ) {
+                let desc = Object.getOwnPropertyDescriptor(from, key);
+                Object.defineProperty(to, key, desc);
+            }
+        }
+    }
 </script>
 
 </html>
