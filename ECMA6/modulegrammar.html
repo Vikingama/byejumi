@@ -34,6 +34,7 @@
         <li>不能使用 fn.caller 和 fn.arguments 获取函数调用的堆栈</li>
         <li>增加了保留字</li>
     </ul>
+    <hr> export 命令用于规定模块的对外接口，import 命令用于输入其他模块提供的功能...
 </body>
 <script>
     `
@@ -47,6 +48,48 @@
 
     // ES6 模块 --- 从 fs 模块加载 3 个方法，其他方法不加载...
     import { stat, exists, readFile } from 'fs';
+
+    // profile.js
+    var firstName = 'Michael';
+    var lastName = 'Jackson';
+    var year = 1958;
+    export { firstName, lastName, year };
+    
+    // export 除了输出变量，还可以输出函数或类...
+    export function cheng(x, y){
+        return x * y;
+    }
+
+    // 通常情况下，export 输出的变量就是本来的名字，但是可以使用 as 关键字重命名...
+    function fn1 (){}
+    function fn2 (){}
+
+    export {
+        fn1 as nelly
+        // 可以用不同的名字输出两次...
+        fn2 as furtado
+        fn2 as timbland
+    }
+
+    // export 规定的是对外的接口，必须与模块内部的变量一一对应...
+    var m = 1;
+    export 1; // error
+    export m; // error
+    export var m = 1; // correct
+    export { m }; // correct
+
+    // export 输出的接口与其对应的值是动态绑定的关系，通过接口可以访问到模块内部实际的值...
+    export var lol = "orz";
+    // 输出变量 lol, 值为 orz, 500 毫秒后变为 0.0
+    setTimeout(()=>{
+        lol = "0.0";
+    }, 500);
+
+    // export 可以出现在模块的任何位置，只要处于模块顶层就可以...
+    function foo(){
+        export default "wow"; // SyntaxError
+    }
+    foo();
     `
 </script>
 
