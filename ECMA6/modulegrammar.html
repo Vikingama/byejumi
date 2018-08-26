@@ -141,6 +141,54 @@
     export default function (){
         console.log("default");
     }
+    import 自定义名字 from './wow.js';
+    自定义名字(); // default
+
+    // foo 函数的函数名 foo，在模块外部是无效的。加载的时候，视同匿名函数加载...
+    export default function foo (){
+        console.log(foo);
+    }
+
+    // export default 就是输出一个叫做 default 的变量或方法，然后系统允许你为它取任意名字...
+    function zmc (){
+        console.log(zmc);
+    }
+    export {zmc as default};
+    // 等同于
+    export default zmc;
+    import {default as zmc} from "modules";
+    // 等同于
+    import zmc from "modules";
+
+    export default 42; // correct
+    export 42; // error
+
+    // 写成一行以后，foo 和 bar实际上并没有被导入当前模块，只是相当于对外转发了这两个接口，导致当前模块不能直接使用 foo 和 bar...
+    export {foo, bar} from "fooBar";
+    // 等同于
+    import {foo, bar} from "fooBar";
+    export {foo, bar};
+
+    /*
+    import & default 只能在模块顶层，不能在代码块中；require 是运行时加载，import 无法取代 require 的动态加载功能...
+    ==> 提案: import()，返回一个 Promise 对象...
+    require() --- 同步加载
+    import() --- 异步加载
+    */
+    import("./modules").then(module => {
+        module.say();
+    }).catch(error => {
+        console.log(error);
+    });
+    Promise.all([
+        import("./a"),
+        import("./b"),
+        import("./c")
+    ]).then((m1, m2, m3) => {
+        ...
+    }).catch(error=>{
+        ...
+    });
     `
 </script>
 
