@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Lazy Animate Advance</title>
+    <style>
+        div {
+            width: 50vw;
+            height: 20vh;
+            border: 1px solid black;
+            font-size: 16px;
+            line-height: 20vh;
+            text-align: center;
+            transition: all .3s;
+            transition-delay: 1000;
+        }
+
+        .into-view {
+            width: 100%;
+            font-size: 32px;
+        }
+    </style>
+</head>
+
+<body>
+    <div>1</div>
+    <div>2</div>
+    <div>3</div>
+    <div>4</div>
+    <div>5</div>
+    <div>6</div>
+    <div>7</div>
+    <div>8</div>
+    <div>9</div>
+    <div>10</div>
+    <div>11</div>
+    <div>12</div>
+    <div>13</div>
+    <div>14</div>
+    <div>15</div>
+    <div>16</div>
+    <div>17</div>
+    <div>18</div>
+    <div>19</div>
+    <div>20</div>
+</body>
+<script>
+    // 当元素进入视口，添加"into-view"类名
+    let divEles = document.querySelectorAll("div"),
+        iOr = new IntersectionObserver(entries => {
+            /*[{
+                // 目标元素的矩形区域的信息
+                boundingClientRect:...,
+                // 目标元素的可见比例，完全可见时为 1，完全不可见时小于等于 0
+                intersectionRatio:...,
+                // 目标元素与视口（或根元素）的交叉区域的信息
+                intersectionRect:...,
+                // 是否发生交叉
+                isIntersecting:...,
+                // 根元素的矩形区域的信息
+                rootBounds:...,
+                // 被观察的目标元素
+                target:...,
+                // 可见性发生变化的时间(毫秒)
+                time:...
+            },{}...]*/
+            console.log(entries);
+        }, {
+            // 配置参数对象，可选
+        })
+    divEles.forEach((item, index, ili) => {
+        iOr.observe(item);
+    });
+</script>
+
+</html>
