@@ -51,6 +51,7 @@
     // 当元素进入视口，添加"into-view"类名
     let divEles = document.querySelectorAll("div"),
         iOr = new IntersectionObserver(entries => {
+            // IntersectionObserver API 是异步的，不随着目标元素的滚动同步触发，只有线程空闲下来，才会执行观察器...
             /*[{
                 // 目标元素的矩形区域的信息
                 boundingClientRect:...,
@@ -67,9 +68,20 @@
                 // 可见性发生变化的时间(毫秒)
                 time:...
             },{}...]*/
-            console.log(entries);
+            entries.forEach((item, index, ili) => {
+                if (item.intersectionRatio != 0) {
+                    item.target.classList.add("into-view");
+                } else {
+                    item.target.classList.remove("into-view");
+                }
+            });
         }, {
             // 配置参数对象，可选
+            /*
+            threshold --- 决定什么时候触发回调函数，一个数组，每个成员都是一个门槛值，默认为 0，即交叉比例 intersectionRatio 达到 0 时触发回调函数...
+            root --- 目标元素所在的容器节点，注意，容器元素必须是目标元素的祖先节点...
+            rootMargin --- 定义根元素的 margin，用来扩展或缩小 rootBounds 这个矩形的大小，从而影响 intersectionRect 交叉区域的大小...
+            */
         })
     divEles.forEach((item, index, ili) => {
         iOr.observe(item);
