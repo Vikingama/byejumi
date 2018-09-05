@@ -10,7 +10,6 @@
         div {
             width: 50vw;
             height: 20vh;
-            color: white;
             line-height: 20vh;
             text-align: center;
             transition: all .3s;
@@ -50,12 +49,12 @@
     window.onresize = e => {
         vpHeight = document.documentElement.clientHeight + document.documentElement.scrollTop;
     };
-    window.onscroll = e => {
+    window.onscroll = () => {
         clearTimeout(delayDo);
         delayDo = setTimeout(function () {
-            inView(e)
-        }, 500)
-    }
+            // inView(divEles);
+        }, 333)
+    };
 </script>
 
 </html>
