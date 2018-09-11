@@ -13,14 +13,53 @@
 </body>
 <script>
     function foo() {
-        console.log(a); // 2 ---> JS 没有动态作用域，只有词法作用域，this 某种程度上很像动态作用域...
+        console.log(a); // A ---> JS 没有动态作用域，只有词法作用域，this 某种程度上很像动态作用域...
+        // 函数被调用时，函数调用应用了 this 的默认绑定，this 指向全局对象(严格模式下 this 指向 undefined)...
+        console.log(this.a); // A
     }
+
     function bar() {
-        var a = 3;
+        var a = "a";
         foo();
     }
-    var a = 2;
+
+    function wow() {
+        // wow 严格来说不属于 obj1...
+        console.log(this.s);
+    }
+    var a = "A",
+        b = "B",
+        s = "global s",
+        obj1 = {
+            s: "S",
+            t: "T",
+            wow: wow
+        },
+        obj2 = {
+            s: "s",
+            t: "t",
+            obj1: obj1
+        };
     bar();
+    obj1.wow(); // 调用时，会使用 obj1 上下文来引用函数，此时，obj1 拥有/包含 wow...
+    obj2.obj1.wow(); // 对象属性引用链只有上一层/最后一层在调用位置中起作用...
+    // 被隐式绑定的函数丢失绑定对象...
+    var wow1 = obj1.wow,
+        wow2 = obj2.obj1.wow;
+    wow1(); // global s
+    wow2(); // global s
+    // call()/apply() --- 可以直接指定 this 的绑定对象...
+    function solidConnect1() {
+        console.log(this.a);
+    }
+    var sc = {
+        a: 2
+    };
+    var solidConnect2 = function () {
+        solidConnect1.call(sc); // 将 solidConnect1 的 this 指向 sc...
+    }
+    solidConnect2(); // 2
+    solidConnect2.call(window); // 2
 </script>
 
 </html>
