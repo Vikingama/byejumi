@@ -36,6 +36,10 @@
     console.log(str1 instanceof String, str1 instanceof Object); // false false
     console.log(str2 instanceof String, str2 instanceof Object); // true true
     console.log(Object.prototype.toString.call(str1), Object.prototype.toString.call(str2)); // [object String] [object String]
+    let str3 = "y65h1hy561n51bnt56hn";
+    // 可以直接在字符串字面上访问属性/方法，是因为引擎自动把字面量转换为 String 对象，可以访问属性和方法...
+    console.log(str3.length, str3.charAt(3)); // 20 h
+    console.log(42.359.toFixed(2)); // 42.36，数字同理...
     const obj = {
         haha: "sha",
         sha: "haha"
