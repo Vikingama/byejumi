@@ -27,7 +27,6 @@
     <hr>
     对象的属性表面上存在在对象内部，实际上它们一般不会存在对象容器内部(技术上)，它们就像指针(引用)一样，指向真正的储存位置...
     <hr>
-
 </body>
 <script>
     let str1 = "str1", // 字面量、不可变的值，如果要在字面量上执行一些操作(包括但不限于获取长度、访问某个字符)需要将其转换为 string 对象(必要时，JS 会自动转换)...
@@ -44,7 +43,46 @@
         haha: "sha",
         sha: "haha"
     }
+    // ·操作符要求属性名满足标识符的命名规范，[..]可以接受任意 UTF-8/Unicode 字符串作为属性名...
     console.log(obj.sha + obj["haha"]); // 属性访问、键访问
+    let arr = [0, 1, 2, 3]; // 数组也是对象，虽然每个下标都是整数...
+    arr.foo = "bar";
+    arr["bar"] = "foo";
+    // 向数组添加一个属性名“看起来”像一个数字的属性，它会变成一个数值下标...
+    arr["9"] = 10;
+    console.log(arr["length"], arr["foo"], arr.bar); // 10 bar foo
+    function cfn() {
+        console.log(this);
+    }
+    let initialObj = {
+        a: 1,
+        b: 2,
+        c: cfn
+    };
+    let oneObj = Object.assign({}, initialObj);
+    let twoObj = JSON.parse(JSON.stringify(initialObj));
+    initialObj.b = 1;
+    initialObj.a = 2;
+    initialObj.c = null;
+    console.log(initialObj); // {a: 2, b: 1, c: null}
+    console.log(oneObj); // {a: 1, b: 2, c: ƒ}
+    console.log(twoObj); // {a: 1, b: 2}
+    console.log(Object.getOwnPropertyDescriptor(initialObj, "a"));
+    /*{
+        value: 2,
+        writable: 是否可以修改属性的值，相当于定义了一个空 setter，并且调用 setter 时抛出 TypeError...
+        enumerable: 是否可枚举，比如是否会出现在 for...in 循环中...
+        configurable: 是否可以修改属性的配置/defineProperty...
+    }*/
+    Object.preventExtensions(initialObj); // 禁止向对象添加新属性，并保留现有属性...、
+    delete initialObj.c; // 为什么 c 属性还是被删除了？
+    initialObj.d = 4;
+    console.log(initialObj); // {a: 2, b: 1}
+    Object.seal(initialObj); // 密封对象，会在现有对象上调用 Object.preventExtensions 方法并将现有属性标记为 configurable:false...
+    delete initialObj.b;
+    initialObj.d = 4;
+    console.log(initialObj); // {a: 2, b: 1}
+    Object.freeze(initialObj); // 冻结对象，会在当前对象上调用 Object.seal 方法，并把所有数据访问属性标记为 false...
 </script>
 
 </html>
