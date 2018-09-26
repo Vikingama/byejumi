@@ -27,6 +27,9 @@
     <hr>
     对象的属性表面上存在在对象内部，实际上它们一般不会存在对象容器内部(技术上)，它们就像指针(引用)一样，指向真正的储存位置...
     <hr>
+    对象常量(writable:false;configurable:false;) -> 禁止扩展(preventExtensions) -> 密封(seal) -> 冻结(freeze)
+    <br>
+    常量属性(不可修改、重定义或者删除) -> 禁止对象添加新属性并保留已有属性 -> 不能添加新属性、不能重新配置或者删除任何现有属性(可以修改属性的值) -> 应用在对象上的级别最高的不可变性、禁止对对象本身及其任意直接属性的修改
 </body>
 <script>
     let str1 = "str1", // 字面量、不可变的值，如果要在字面量上执行一些操作(包括但不限于获取长度、访问某个字符)需要将其转换为 string 对象(必要时，JS 会自动转换)...
@@ -83,6 +86,63 @@
     initialObj.d = 4;
     console.log(initialObj); // {a: 2, b: 1}
     Object.freeze(initialObj); // 冻结对象，会在当前对象上调用 Object.seal 方法，并把所有数据访问属性标记为 false...
+    let thief = {
+        th: "ief"
+    };
+    console.log("th" in thief); // 检测属性是否在对象及其原型链中...
+    console.log(thief.hasOwnProperty("ief")); // 不会去检测原型链...
+    console.log(3 in [1, 2, 3]); // false --- 这个数组只有 0 1 2 三个属性
+    console.log([1, 2, 3].includes(3)); // true --- 这个数组包含 3 这个元素
+    for (let item in [1, 2, 3, 4]) {
+        console.log(item); // 0 1 2 3
+    }
+    /*
+        Object.keys() --- 返回对象的可枚举直接属性
+        Object.getOwnPropertyNames() --- 返回对象的所有得的直接属性
+    */
+    let tiny = {};
+    Object.defineProperty(tiny, "a", {
+        enumerable: false,
+        value: "a"
+    });
+    Object.defineProperty(tiny, "b", {
+        enumerable: true,
+        value: "b"
+    });
+    console.log(tiny.propertyIsEnumerable("a")); // false --- 检查给定的属性名是否是可枚举属性并且直接存在于对象中(而不是原型链中)
+    console.log(tiny.propertyIsEnumerable("b")); // true
+    // 给对象手动添加迭代器，使对象可以用 for...of... 循环
+    let iter = {
+        a: "fdgs",
+        b: "jkcj",
+        c: "tyui"
+    };
+    Object.defineProperty(iter, Symbol.iterator, {
+        enumerable: false,
+        writable: false,
+        configurable: false,
+        value: function () {
+            let that = this,
+                index = 0,
+                keys = Object.keys(that);
+            return {
+                next() {
+                    return {
+                        value: that[keys[index++]],
+                        done: index > keys.length
+                    }
+                }
+            }
+        }
+    });
+    for (const item of iter) {
+        console.log(item);
+    }
+    let wow = iter[Symbol.iterator]();
+    console.log(wow.next());
+    console.log(wow.next());
+    console.log(wow.next());
+    console.log(wow.next());
 </script>
 
 </html>
