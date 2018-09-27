@@ -143,6 +143,30 @@
     console.log(wow.next());
     console.log(wow.next());
     console.log(wow.next());
+    let example1 = {
+            a: 1
+        },
+        example2;
+    example2 = Object.create(example1);
+    console.log(example1.hasOwnProperty("a")); // true
+    console.log(example2.hasOwnProperty("a")); // false
+    console.log(example2); // {}
+    example2.a++; // 隐式屏蔽 ---> example2.a = example2.a + 1
+    console.log(example2); // {a: 2}
+    function example3() {}
+    console.log(example3.prototype); // 公有且不可枚举的属性，指向一个对象...
+    let ex3fn = new example3();
+    console.log(Object.getPrototypeOf(ex3fn) === example3.prototype); // true ---> 指向同一个对象...
+    function Foo(name) {
+        this.name = name || "default";
+    }
+    Foo.prototype = {
+        foo: "bar"
+    };
+    let foobar = new Foo(); // foobar 的构造函数实际指向 Foo.prototype.constructor...
+    // foobar 并没有 constructor 属性，它会委托原型链上的 Foo.prototype，持续委托至顶端 Object.prototype 的 constructor 指向 Object...
+    console.log(foobar.constructor === Foo); // false
+    console.log(foobar.constructor === Object); // true
 </script>
 
 </html>
