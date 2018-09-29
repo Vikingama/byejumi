@@ -30,6 +30,8 @@
     对象常量(writable:false;configurable:false;) -> 禁止扩展(preventExtensions) -> 密封(seal) -> 冻结(freeze)
     <br>
     常量属性(不可修改、重定义或者删除) -> 禁止对象添加新属性并保留已有属性 -> 不能添加新属性、不能重新配置或者删除任何现有属性(可以修改属性的值) -> 应用在对象上的级别最高的不可变性、禁止对对象本身及其任意直接属性的修改
+    <hr>
+    Object.create(null) --- 创建没有原型链的对象，使用 instanceof 操作符 总会返回 false，这种对象通常被成为“字典”，非常适合来储存数据...
 </body>
 <script>
     let str1 = "str1", // 字面量、不可变的值，如果要在字面量上执行一些操作(包括但不限于获取长度、访问某个字符)需要将其转换为 string 对象(必要时，JS 会自动转换)...
@@ -167,6 +169,30 @@
     // foobar 并没有 constructor 属性，它会委托原型链上的 Foo.prototype，持续委托至顶端 Object.prototype 的 constructor 指向 Object...
     console.log(foobar.constructor === Foo); // false
     console.log(foobar.constructor === Object); // true
+    // Object.create 的 polyfill 代码
+    if (!Object.create) {
+        Object.create = function (o) {
+            function O() {}
+            O.prototype = o;
+            return new O();
+        }
+    }
+    let eg1 = {
+        im: 1
+    };
+    // polyfill 代码无法实现第二个参数的功能...
+    let eg2 = Object.create(eg1, {
+        ee: {
+            configurable: false,
+            enumerable: false,
+            writable: false,
+            value: 2
+        },
+        gg: {
+            value: 3
+        }
+    });
+    console.log(eg2, eg2.hasOwnProperty("im"));
 </script>
 
 </html>
