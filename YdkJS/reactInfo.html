@@ -6,6 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>React Info</title>
+    <style>
+        xmp {
+            border: 1px dashed black;
+            font-family: "Microsoft Yahei";
+        }
+    </style>
 </head>
 
 <body>
@@ -14,18 +20,207 @@
         <li>元素与组件：
             <ul>
                 <li>元素：构建 React 应用的最小单位，是 JS 中的普通对象...</li>
-                <li></li>
+                <li>组件：在 UI 界面中可以被独立划分、可重复使用、独立的模块，构建在元素的基础之上，类似于 JS 中对 function 的定义...</li>
+                <li>组件会接受一个 props 参数，返回相应的 React 元素，将返回结果交给 ReactDOM 渲染出来...</li>
             </ul>
         </li>
         <li>函数定义与类定义</li>
+        <xmp id="code1"></xmp>
         <li>展示与容器</li>
+        <xmp id="code2"></xmp>
         <li>有状态与无状态</li>
+        <xmp id="code3"></xmp>
         <li>受控与非受控</li>
+        <xmp id="code4"></xmp>
         <li>组合与继承</li>
+        <xmp id="code5"></xmp>
     </ul>
 </body>
 <script>
-
+    document.querySelector("#code1").innerText =
+        `
+    函数定义组件：
+        function Title(props){
+            return <h1>Hello, {props.name}</h1>;
+        }
+        const Title = props => <h1>Hello, {props.name}</h1>;
+    类定义组件：
+        class Title extends React.Component {
+            render(){
+                return <h1>Hello, {this.props.name}</h1>;
+            }
+        }
+    `;
+    document.querySelector("#code2").innerText =
+        `
+    展示组件：负责内容展示，从 props 接受父组件传递的数据，可以使用函数定义组件声明...
+        class CommentList extends React.Component {
+            // 展示回复列表
+            constructor(props) {
+                super(props);
+            }
+            renderComment({
+                body,
+                author
+            }) {
+                return <li>{body}-{author}</li>;
+            }
+            render() {
+                return <ul>{this.props.comments.map(this.renderComment)}</ul>;
+            }
+        }
+    容器组件：关注于组件数据的交互，拥有 state、从服务器/redux获取数据，使用类定义组件声明，包含生命周期函数和其他附件方法...
+        class CommentListContainer extends React.Component {
+            // 获取回复数据
+            constructor() {
+                super();
+                this.state = {
+                    commnets: []
+                };
+            }
+            componentDidMount() {
+                $.ajax({
+                    url: "./comments.json",
+                    dataType: "json",
+                    success: function(){
+                        this.setState({
+                            comments: comments
+                        })
+                    }.bind(this)
+                })
+            }
+            render() {
+                return <CommentList comments={this.state.comments}/>
+            }
+        }
+    `;
+    document.querySelector("#code3").innerText =
+        `
+    不是所有的展示组件都是无状态组件，所有的容器组件都是有状态组件...
+    在实际开发当中，编写的组件大部分都是无状态组件；毕竟 React 的主要作用是编写用户界面...
+    有状态组件：
+        class StatefulLink extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = {
+                    active: false
+                };
+            }
+            handleClick() {
+                this.setState({
+                    active: !this.state.active
+                });
+            }
+            render() {
+                return <a
+                style={{color: this.state.active ? 'red' : 'blue'}}
+                onClick={this.handleClick.bind(this)}
+                >
+                StatefulLink
+                </a>;
+            }
+        }
+    无状态组件：
+        class StatelessLink extends React.Component {
+            constructor(props) {
+                super(props);
+            }
+            handleClick() {
+                this.props.handleClick(this.props.router);
+            }
+            render() {
+                const active = this.props.activeRouter === this.props.router;
+                return (
+                    <li>
+                        <a
+                        style={{color: active ? 'red' : 'black'}}
+                        onClick={this.handleClick.bind(this)}
+                        >
+                        StatelessLink
+                        </a>
+                    </li>
+                );
+            }
+        }
+    `;
+    document.querySelector("#code4").innerText =
+        `
+    受控组件：其值由 props 或 state 传入，在交互过程中引起 state 的改变；在 state 改变之后重新渲染组件，才能在页面中看到元素中值的变化，假如组有绑定事件处理函数改变 state，用户交互不会起到任何效果的...
+        class ControlledInput extends React.Component {
+            constructor() {
+                super();
+                this.state = {
+                    value: "Please type here..."
+                };
+            }
+            handleChange(event) {
+                console.log('Controlled change:', event.target.value);
+                this.setState({
+                    value: event.target.value
+                });
+            }
+            render() {
+                return  (
+                    <label>
+                        Controlled Component:
+                        <input type="text"
+                        value={this.state.value}
+                        onChange={e => this.handleChange(e)}
+                        />
+                    </label>
+                );
+            }
+        }
+    非受控组件：用户输入不会直接引起应用 state 的变化，也不会直接为非受控组件传入值...
+        class UncontrolledInput extends React.Component {
+            constructor() {
+                super();
+            }
+            handleChange() {
+                console.log('Uncontrolled change:', this.input.value);
+            }
+            render() {
+                return (
+                <label>
+                    Uncontrolled Component:
+                    <input type="text"
+                    defaultValue='Please type here...'
+                    ref={input => this.input = input}
+                    onChange={() => this.handleChange()}
+                    />
+                </label>
+                );
+            }
+        }
+    `;
+    document.querySelector("#code5").innerText =
+        `
+    组合组件：
+        const CompositedButton = props => <button style={{backgroundColor: props.color}}>CompositedButton</button>;
+        const YellowButton = () => <CompositedButton color='#fff'/>;
+    继承组件：
+        class InheritedButton extends React.Component {
+            constructor() {
+                super();
+                this.state = {
+                    color: "red"
+                };
+            }
+            render() {
+                return (
+                    <button style={{backgroundColor: this.state.color}} class='react-button'>InheritedButton</button>
+                );
+            }
+        }
+        class BlueButton extends InheritedButton{
+            constructor() {
+                super();
+                this.state = {
+                    color: "blue"
+                };
+            }
+        }
+    `;
 </script>
 
 </html>
