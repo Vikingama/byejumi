@@ -1,11 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>React Data</title>
+    <style>
+        xmp {
+            border: 1px dashed black;
+            font-family: "Microsoft Yahei";
+        }
+    </style>
 </head>
 
 <body>
@@ -13,10 +19,104 @@
     <ul>
         <li>props：自上而下传递变量、传递函数、传递组件、props.children；相当于 HTML 的 attributes 属性;；props 是只读的、可以设置默认值、可以进行类型检查...</li>
         <li>state：初始化、setState 方法、向下传递数据...</li>
-        <li>context：</li>
+        <xmp id="state"></xmp>
+        <li>context：实验性质的 API，由于 React 中数据自上而下传递，当组件嵌套增多，数据传递困难...</li>
+        <xmp id="context"></xmp>
     </ul>
 </body>
 <script>
+    document.querySelector('#state').innerHTML =
+        `
+    class CurrencyConvertor extends React.Component {
+        constructor() {
+            super();
+            this.state = {
+                money: 100
+            }
+        }
+        handleInputChange(event) {
+            this.setState({
+                money: event.target.value
+            })
+        }
+        render() {
+            return (
+                <div>
+                    <h2>汇率转换</h2>
+                    <YuanInput money={this.state.money} handleChange={e => this.handleInputChange(e)}/>
+                    <MoneyConvertor type="美元" unit='dollar' money={this.state.money} rate={0.1453}/>
+                    <MoneyConvertor type="日元" unit='yen' money={this.state.money} rate={16.1814}/>
+                </div>
+            );
+        }
+    }
+    class YuanInput extends React.Component {
+        constructor(props) {
+            super(props);
+        }
+        handleChange(props) {
+            this.props.handleChange(event);
+        }
+        render() {
+            return (
+                <p>
+                    <label>
+                        人民币
+                        <input name="yuan" onChange={e => this.handleChange(e)} value={this.props.money}/>
+                    </label>
+                </p>
+            );
+        }
+    }
+    const MoneyConvertor = props => {
+        <p>
+            <label>
+                {props.type}
+                <input name={props.unit} value={(props.money * props.rate).toFixed(2)} disabled/>
+            </label>
+        </p>
+    }
+    `;
+    document.querySelector('#context').innerHTML =
+        `
+    const UserInfo = (props, context) => (
+        <div className="UserInfo-name">
+            {context.lastName + ", " + props.firstName}
+        </div>
+    );
+    UserInfo.contextTypes = {
+        lastName: React.PropTypes.string
+    };
+    const Column = props => <div className="column"><UserInfo firstName={props.firstName}/></div>;
+    const Row = props => <div className='row'><Column firstName={props.firstName}/></div>;
+    const Container = props => <div className='container'><Row firstName={props.firstName}/></div>;
+    class App extends React.Component {
+        constructor() {
+            super();
+            this.state = {
+                firstName: 'Bolun'
+            };
+        }
+        // 利用 context，只需要在最外层的应用组件中定义，直接在目标组件中使用即可；
+        // 通过组件中的特殊方法 getChildContext 来定义 context；
+        // 另外要注意的是，必须用 childContextTypes 和 contextTypes 各自声明 context 的类型，否则无法获取 context 中的数据...
+        getChildContext() {
+            return {
+                lastName: "Yu"
+            };
+        }
+        render() {
+            return (
+                <div className='App'>
+                    <Container firstName={this.state.firstName}/>
+                </div>
+            )
+        }
+    }
+    App.childContextTypes = {
+        lastName: React.PropTypes.string
+    }
+    `;
 </script>
 
 </html>
