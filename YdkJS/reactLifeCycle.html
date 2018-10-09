@@ -41,17 +41,19 @@
             调度过程中被触发的生命周期函数：
             <ul>
                 <li>componentWillMount：渲染之前触发，只会触发一次，触发时机几乎和 constructor 函数相同，在此方法里对 state 进行定义或修改不会触发重新渲染...</li>
-                <li>componentWillReceiveProps：在调用 setState 方法之后、子组件收到 props 之后触发，通过 nextProps 获取 新的 props，通过 props 获取之前的 props...</li>
+                <li>componentWillReceiveProps：在调用 setState 方法之后、子组件收到 props 之后触发，通过 nextProps 获取 新的 props，通过 props
+                    获取之前的 props...</li>
                 <li>shouldComponentUpdate：默认返回 true；如果返回 false 更新流程会被跳过，render 也不会继续被触发；在此自定义判断规则可以提高应用性能...</li>
-                <li>componentWillUpdate：渲染之前触发，无法调用 setState，可以理解为更改 state 为时已晚，可以在 componentWillReceiveProps 中更新 state...</li>
+                <li>componentWillUpdate：渲染之前触发，无法调用 setState，可以理解为更改 state 为时已晚，可以在 componentWillReceiveProps 中更新
+                    state...</li>
             </ul>
         </li>
         <li>
             执行过程中被触发的生命周期函数：
             <ul>
                 <li>componentDidMount：初次渲染完成之后被触发，只会触发一次，可以访问 DOM 元素，推荐在此函数中进行 ajax 请求...</li>
-                <li>componentDidUpdate：可以发起 ajax 请求，可以比较前后 props 的变化...</li>
-                <li>componentWillUnmount</li>
+                <li>componentDidUpdate：适合发起 ajax 请求，可以比较前后 props 的变化...</li>
+                <li>componentWillUnmount：在卸载流程中触发，可以解绑组件绑定的事件、计时器等...</li>
             </ul>
         </li>
         <li>
