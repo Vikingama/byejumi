@@ -15,7 +15,53 @@
 </head>
 
 <body>
-
+    以 JSX 的形式将组件注入 React.render 方法的第一个参数
+    <br>
+    --->
+    <br>
+    JSX 会被 React 内部转译，使用 React.createElement 创建 React 元素
+    <br>
+    --->
+    <br>
+    React.render 方法获取到 React 元素后将其实例化
+    <br>
+    --->
+    <br>
+    根据实例化的 React 元素创建出真实的 DOM 元素
+    <br>
+    --->
+    <br>
+    创建好的 DOM 元素会被插入到目标 DOM 容器中...
+    <hr>
+    React Fiber 是 React 的底层引擎，他将 React 应用界面更新的过程分为两个主要部分：调度过程 & 执行过程...
+    <ul>
+        <li>
+            对虚拟 DOM 进行 Diff 操作之后进入调度阶段，Fiber 计算出最优化的调度方法，之后提交调度计算结果，将内容渲染到页面中...
+            <br>
+            调度过程中被触发的生命周期函数：
+            <ul>
+                <li>componentWillMount</li>
+                <li>componentWillReceiveProps</li>
+                <li>shouldComponentUpdate</li>
+                <li>componentWillUpdate</li>
+            </ul>
+        </li>
+        <li>
+            执行过程中被触发的生命周期函数：
+            <ul>
+                <li>componentDidMount</li>
+                <li>componentDidUpdate</li>
+                <li>componentWillUnmount</li>
+            </ul>
+        </li>
+        <li>
+            React 的初次渲染会进行挂载流程，挂载之后的后续渲染进行的都是更新流程；
+            可以通过 ReactDOM.unmountComponentAtNode 方法将组件卸载...
+        </li>
+    </ul>
 </body>
+<script>
+
+</script>
 
 </html>
