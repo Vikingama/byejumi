@@ -27,6 +27,8 @@
     <xmp id="code2"></xmp>
     在开发大型应用时，最好事先定义所有的 actionType：
     <xmp id="code3"></xmp>
+    Reducer：根据应用现有状态和触发的action返回新的状态的函数，之所以叫做 Reducer 是因为它的类型和 Array.prototype.reduce 方法的回调函数很像...
+    <xmp id="code4"></xmp>
 </body>
 <script>
     document.querySelector("#code1").innerText =
@@ -119,6 +121,12 @@
     };
     const addNum = counterActionGenerator(INCREMENT, null);
     const decNum = counterActionGenerator(DECREMENT, null);
+    `;
+    document.querySelector("#code4").innerText =
+        `
+    console.log([0, 1, 2, 3, 4, 5].reduce(function (p1, p2) {
+        return p1 + p2;
+    })); // 15
     `;
 </script>
 
