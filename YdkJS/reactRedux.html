@@ -6,13 +6,120 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>React Redux</title>
+    <style>
+        xmp {
+            border: 1px dashed black;
+            font-family: "Microsoft Yahei";
+        }
+    </style>
 </head>
 
 <body>
-
+    React 本身没有提供好的状态管理解决方案 ---> Redux ---> 把整个应用的数据状态统一到一个地方管理...
+    <br>
+    Redux 将整个应用的数据状态储存在一个全局对象中，所有的数据交互和状态改变统一用 action 动作对象来描述...
+    <br>
+    所有的动作都经由 Reducer 方法来改变对应的应用状态...
+    <br>
+    最终通过 Store 对象来执行 action 动作、获取 state 应用状态、订阅状态改变时触发的事件...
+    <xmp id="code1"></xmp>
+    Flux Standard Action 标准：
+    <xmp id="code2"></xmp>
+    在开发大型应用时，最好事先定义所有的 actionType：
+    <xmp id="code3"></xmp>
 </body>
 <script>
-
+    document.querySelector("#code1").innerText =
+        `
+    const counter = (state = {
+        value: 0
+    }, action) => {
+        switch (action.type) {
+            // 定义的 action 动作...
+            case 'INCREMENT':
+                return {
+                    value: state.value + 1
+                };
+            case 'DECREMENT':
+                return {
+                    value: state.value - 1
+                };
+            default:
+                return state;
+        }
+    };
+    class Counter extends React.Component {
+        constructor() {
+            super();
+            this.state = counter(undefined, {});
+        }
+        dispatch(action) {
+            this.setState(prevState => counter(prevState, action));
+        }
+        // Actions
+        increment = () => {
+            this.dispatch({
+                type: "INCREMENT"
+            });
+        };
+        decrement = () => {
+            this.dispatch({
+                type: "DECREMENT"
+            });
+        };
+        render() {
+            return (
+                <div>
+                    {this.state.value}
+                    <button onClick={this.increment}>+</button>
+                    <button onClick={this.decrement}>-</button>
+                </div>
+            );
+        }
+    }
+    ReactDOM.render(<Counter/>, document.getElementById('root'));
+    `;
+    document.querySelector("#code2").innerText =
+        `
+    {
+        // action 类型，必须的...
+        type: "INCREMENT",
+        // payload 中要传递的数据，修改应用 state，可选的...
+        payload: {
+            num: 1
+        }
+        // payload 数据未获取成功时返回值，可选的...
+        error: false,
+        // 一些不必要的在 payload 中传递的其他数据，可选的...
+        meta: {
+            success: true
+        }
+    }
+    `;
+    document.querySelector("#code3").innerText =
+        `
+    预先定义 action 的优势：
+        可以在同一个文件中规范应用所有 action 的命名，方便后期维护...
+        每次提交新版本时，可以很轻松地查阅那些 action 类型被增加修改或删除了...
+    // actionTypes.js
+    export const INCREMENT = "INCREMENT";
+    export const DECREMENT = "DECREMENT";
+    ------------------------------------------------
+    // action.js
+    import {
+        INCREMENT,
+        DECREMENT
+    } from "./actionTypes";
+    const counterActionGenerator = (type, num) => (num) => {
+        let action = {
+            type,
+            num
+        }
+        return action;
+    };
+    const addNum = counterActionGenerator(INCREMENT, null);
+    const decNum = counterActionGenerator(DECREMENT, null);
+    `;
 </script>
 
 </html>
