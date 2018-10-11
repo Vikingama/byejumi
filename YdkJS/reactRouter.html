@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>React Router</title>
+</head>
+
+<body>
+    <span id="state"></span>
+    <br>
+    <a href="https://www.baidu.com">https://www.baidu.com</a>
+</body>
+<script>
+    (function (history) {
+        console.log(history);
+        let pushState = history.pushState;
+        history.pushState = function (state) {
+            if (typeof history.onpushstate == "function") {
+                history.onpushstate({
+                    state: state
+                });
+            }
+            console.log(arguments);
+            return pushState.apply(history, arguments);
+        }
+    })(window.history)
+    window.onpopstate = history.onpushstate = function (e) {
+        console.log(e);
+        document.getElementById("state").innerHTML =
+            "location: " +
+            document.location +
+            "<br>state: " +
+            JSON.stringify(e.state);
+    }
+    let eles = document.getElementsByTagName("a");
+    [...eles].forEach((item, index, eles) => {
+        item.onclick = function (e) {
+            let route = e.target.getAttribute("href");
+            e.preventDefault();
+            history.pushState({
+                page: route
+            }, route)
+        }
+    });
+</script>
+
+</html>
