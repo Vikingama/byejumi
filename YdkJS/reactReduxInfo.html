@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>React Redux</title>
+    <title>React Redux Info</title>
     <style>
         xmp {
             border: 1px dashed black;
@@ -29,6 +29,16 @@
     <xmp id="code3"></xmp>
     Reducer：根据应用现有状态和触发的action返回新的状态的函数，之所以叫做 Reducer 是因为它的类型和 Array.prototype.reduce 方法的回调函数很像...
     <xmp id="code4"></xmp>
+    Store：存储 state 的地方，使用 createStore 创建...
+    <ul>
+        <li>getState：获取当前存储中的状态数据...</li>
+        <li>dispatch：将传入的 action 操作执行并触发 listeners 事件监听器（当状态数据改变时会自动触发的一些事件）的东西...</li>
+        <li>subscribe：用来添加 listener 的方法，返回一个 unsubscribe 的方法用来取消 listener...</li>
+        <li>replaceReducer</li>
+    </ul>
+    <xmp id="code5"></xmp>
+    Middleware：中间件，例如在查看特定的带有用户信息的网页之前需要登录验证，这个处理登陆验证的模块就可以被称为 Middleware...
+    <xmp id="code6"></xmp>
 </body>
 <script>
     document.querySelector("#code1").innerText =
@@ -124,9 +134,92 @@
     `;
     document.querySelector("#code4").innerText =
         `
+    // Reducer 主体是一个 switch 结构，其本身必须是一个纯函数，不可以修改影响输入值...
     console.log([0, 1, 2, 3, 4, 5].reduce(function (p1, p2) {
         return p1 + p2;
     })); // 15
+    // preState + action => newState
+    const todos = (state = [], action) => {
+        switch (action.type) {
+            case "ADD":
+                // 数据发生改变，进行 diff 操作，界面就会跟着响应，所以改变前后的数据都需要使用...
+                return [
+                    ...state, {
+                        id: action.id,
+                        text: action.text,
+                        completed: false
+                    }
+                ];
+            default:
+                return state;
+        }
+    }
+    `;
+    document.querySelector("#code5").innerText =
+        `
+    import { createStore } from 'redux';
+    import counter from './reducers';
+    const store = createStore(counter);
+    --------------------------------------------------
+    const counter = (state = 0, action) => {
+        switch (action.type) {
+            case 'INCREMENT':
+                return state + 1
+            case 'DECREMENT':
+                return state - 1
+            default:
+                return state
+        }
+    };
+    const store = createStore(counter);
+    const render = () => {
+        document.body.innerText = store.getState();
+    };
+    store.subscribe(() => {
+        console.log(store.getState());
+    });
+    let unsubscribe = store.subscribe(render);
+    render();
+    document.getElementById('increment').addEventListener('click',function() {
+        store.dispatch({ type: 'INCREMENT' });
+    });
+    document.getElementById('decrement').addEventListener('click',function() {
+        store.dispatch({ type: 'DECREMENT' });
+    });
+    document.getElementById('unsubscribe').addEventListener('click',function() {
+        unsubscribe();
+    });
+    `;
+    document.querySelector("#code6").innerText =
+        `
+    // 中间件的简单实现...
+    let store = createStore(counter);
+    const confirmationMiddleware = store => next => action => {
+        if (confirm('Are you sure?')) {
+            next(action);
+        }
+        return false
+    };
+    const loggerMiddleware = store => next => action => {
+        console.log('prev state', store.getState());
+        let result = next(action);
+        console.log('next state', store.getState());
+        return result;
+    };
+    // 定义 applyMiddleware 方法...
+    function applyMiddleware(store, middlewares) {
+        // 将 middlewares 的顺序调整成 action 传递的顺序...
+        middlewares = middlewares.slice();
+        middlewares.reverse();
+        let dispatch = store.dispatch;
+        middlewares.forEach(middleware =>
+            dispatch = middleware(store)(dispatch);
+        );
+        return { ...store,
+            dispatch
+        }
+    }
+    store = applyMiddleware(store, [loggerMiddleware, confirmationMiddleware]);
     `;
 </script>
 
