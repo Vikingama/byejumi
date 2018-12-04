@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Bind This</title>
+</head>
+
+<body>
+
+</body>
+<script>
+    function speak() {
+        console.log(this);
+        console.log(this.name);
+        console.log("···");
+    }
+    var name = "window name",
+        sample = {
+            name: "sample name",
+            speak: speak
+        },
+        speakPark = sample.speak;
+    speak(); // this - window
+    sample.speak(); // this - sample
+    speakPark(); // this - window
+    setTimeout(function () {
+        sample.speak(); // this - sample
+    }, 100);
+    setTimeout(sample.speak, 300); // this - window
+    console.log("🙃🙃🙃");
+    speak.call("god"); // 装箱...
+    console.log("🙃🙃🙃");
+</script>
+
+</html>
