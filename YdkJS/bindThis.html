@@ -12,11 +12,6 @@
 
 </body>
 <script>
-    function speak() {
-        console.log(this);
-        console.log(this.name);
-        console.log("···");
-    }
     var name = "window name",
         sample = {
             name: "sample name",
@@ -31,8 +26,17 @@
     }, 100);
     setTimeout(sample.speak, 300); // this - window
     console.log("🙃🙃🙃");
-    speak.call("god"); // 装箱...
+    let god = "god";
+    god.name = "jesus";
+    speak.call(god); // 装箱，undefined...
+    console.log(Object.create(null));
     console.log("🙃🙃🙃");
+
+    function speak() {
+        console.log(this);
+        console.log(this.name);
+        console.log("···");
+    }
 </script>
 
 </html>
