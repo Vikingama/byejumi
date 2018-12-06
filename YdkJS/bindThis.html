@@ -9,9 +9,12 @@
 </head>
 
 <body>
-
+    prototype:
+    <hr>
+    __proto__:
 </body>
 <script>
+    Object.prototype.shout = "scream"; // 会影响到所有的对象实例，因为这是对对象的构造函数进行的改写...
     var name = "window name",
         sample = {
             name: "sample name",
@@ -30,7 +33,35 @@
     god.name = "jesus";
     speak.call(god); // 装箱，undefined...
     console.log(Object.create(null));
-    console.log("🙃🙃🙃");
+    console.log("🐷🐷🐷");
+    let target = {
+            name: "target"
+        },
+        combine = {
+            age: 18
+        },
+        princess = {
+            name: "white"
+        },
+        bride = {
+            name: "bitch",
+            age: 24,
+            do: "washin'"
+        };
+    target.__proto__.cry = "tears"; // 为什么也会影响所有的对象实例，仅仅是改写了实例的原型链而已？？？
+    Object.assign(target, combine, princess, bride);
+    Object.preventExtensions(target); // 仅仅禁止添加新属性，可以修改已有属性...
+    target.name = "rita";
+    target.sing = "bom";
+    Object.seal(target); // 密封之后不仅不能添加新属性，也不能重新配置或者删除任何现有属性，可以修改属性的值...
+    target.say = "english";
+    target.name = "riri";
+    Object.freeze(target); // 在密封的基础上，还不可以修改属性值...
+    target.age = 36;
+    console.log("📌📌📌");
+    console.log(target);
+    console.log("cry" in target); // 检测范围包括原型链...
+    console.log("📌📌📌");
 
     function speak() {
         console.log(this);
