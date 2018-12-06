@@ -68,6 +68,9 @@
     console.log(target);
     console.log("cry" in target); // 检测范围包括原型链...
     console.log("📌📌📌");
+    for (const key in target) {
+        console.log(key); // 原型链上的也会被循环出来...
+    }
 
     function speak() {
         console.log(this);
