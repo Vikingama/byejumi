@@ -48,6 +48,10 @@
     <div>20</div>
 </body>
 <script>
+    // 当元素进入视口，添加"into-view"类名
+    let divEles = document.querySelectorAll("div"),
+        vpHeight = document.documentElement.clientHeight,
+        delayDo;
     // 页面刷新时，回到页面顶部
     window.onbeforeunload = function () {
         document.documentElement.scrollTop = 0;
@@ -64,10 +68,6 @@
             addClass();
         }, 333)
     };
-    // 当元素进入视口，添加"into-view"类名
-    let divEles = document.querySelectorAll("div"),
-        vpHeight = document.documentElement.clientHeight,
-        delayDo;
     // 元素是否进入视口
     function inView() {
         let thisTop = this.getBoundingClientRect().top; // 相对于视口左上角的垂直距离
