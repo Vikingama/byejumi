@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Lcy Tmcs</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            text-decoration: none;
+        }
+
+        img {
+            vertical-align: top;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container">
+        <ul>
+            <li>
+
+            </li>
+        </ul>
+    </div>
+</body>
+
+<script>
+    function Lcy(el, images, properties) {
+        if (!el) {
+            return;
+        }
+        if (!images || !images.length) {
+            return;
+        }
+        // 📌📌📌
+        this.el = el;
+        this.images = images;
+        this.transitionTime = properties.transitionTime;
+        this.swipeTime = properties.transitionTime;
+        // 📌📌📌
+        this.index = 1;
+        this.animateSwitcher = false;
+        // 📌📌📌
+        this.init();
+    }
+    Lcy.prototype.init = () => {
+
+    }
+    Lcy.prototype.bindEvent = () => {
+
+    }
+    Lcy.prototype.renderDom = () => {
+
+    }
+    Lcy.prototype.renderDot = () => {
+
+    }
+    Lcy.prototype.dotClick = () => {
+
+    }
+</script>
+
+<script>
+    var container = document.getElementById("container"),
+        images = [{
+            src: "./resource/eggs.jpg",
+            url: "javascript:void(0)"
+        }, {
+            src: "./resource/invite.jpg",
+            url: "javascript:void(0)"
+        }, {
+            src: "./resource/report.jpg",
+            url: "javascript:void(0)"
+        }, {
+            src: "./resource/turtles.jpg",
+            url: "javascript:void(0)"
+        }];
+    new Lcy(container, images, {
+        transitionTime: 800, // 切换动画时间
+        swipeTime: 3000 // 切换下一张时间
+    });
+</script>
+
+</html>
