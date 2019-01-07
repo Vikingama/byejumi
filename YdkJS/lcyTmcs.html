@@ -14,10 +14,6 @@
             text-decoration: none;
         }
 
-        img {
-            vertical-align: top;
-        }
-
         .broadcastMe {
             position: relative;
             width: 100%;
@@ -27,6 +23,7 @@
 
         /* 内容主体 */
         .broadcastMe .broadcastMe-list {
+            /* 如果为 absolute，就不能将外层的 div 撑起... */
             position: relative;
         }
 
@@ -36,6 +33,7 @@
 
         .broadcastMe .broadcastMe-list .broadcastMe-item img {
             width: 100%;
+            vertical-align: top;
         }
 
         /* 分页器主体 */
@@ -43,7 +41,6 @@
             position: absolute;
             left: 0;
             bottom: 0;
-            padding-bottom: 0.5rem;
             width: 100%;
             text-align: center;
         }
@@ -115,13 +112,14 @@
         // 动画时长
         this.transitionTime = props.transitionTime || 800;
         // 轮播间隔
-        this.swipeTime = props.transitionTime || 5000;
+        this.swipeTime = props.swipeTime || 8000;
         // 📌📌📌
         this.index = 1;
         this.animateSwitcher = false; // true --- 轮播动画进行中，false --- 轮播动画完成...
         // 📌📌📌
         this.init();
     }
+    // 准备 DOM 结构...
     Lcy.prototype.init = function () {
         let cssStr =
             `
@@ -186,49 +184,42 @@
         // 绑定事件
         this.bindEvent();
     }
+    // DOM 绑定事件，开始轮播...
     Lcy.prototype.bindEvent = function () {
-        this.main = this.el.querySelector(".broadcastMe");
-        this.mainList = this.el.querySelector(".broadcastMe-list");
-        this.mainTool = this.el.querySelector(".broadcastM-tool");
-        this.mainDot = [...this.el.querySelectorAll(".broadcastMe-spot")];
-        this.mainLeft = this.el.querySelector(".broadcastMe-btn-left");
-        this.mainRight = this.el.querySelector(".broadcastMe-btn-right");
-        // 自动轮播函数
-        function autoPlay() {
+        this.mainList = this.el.querySelector(".broadcastMe-list"); // 作用主体
+        this.mainDot = [...this.el.querySelectorAll(".broadcastMe-spot")]; // 分页器
+        this.mainLeft = this.el.querySelector(".broadcastMe-btn-left"); // 向左
+        this.mainRight = this.el.querySelector(".broadcastMe-btn-right"); // 向右
+        // 轮播函数
+        function play(direction) {
             if (this.animateSwitcher) {
                 return;
             }
-            this.index++;
+            if (direction) {
+                // 正向
+                this.index++;
+            } else {
+                // 反向
+                this.index--;
+            }
             this.renderDom();
         }
-        // 左右按钮事件
-        this.mainLeft.addEventListener("click", () => {
-            if (this.animateSwitcher) {
-                return;
-            }
-            this.index--;
-            this.renderDom();
-        });
-        this.mainRight.addEventListener("click", () => {
-            if (this.animateSwitcher) {
-                return;
-            }
-            this.index++;
-            this.renderDom();
-        });
-        // 分页器事件
+        // 绑定左右按钮事件
+        this.mainLeft.addEventListener("click", play.bind(this, false));
+        this.mainRight.addEventListener("click", play.bind(this, true));
+        // 绑定分页器事件
         this.mainDot.map(item => {
             item.addEventListener("click", e => {
                 this.dotClick(e.target);
             });
         });
-        // 自动轮播
-        let timer = setInterval(autoPlay.bind(this), this.swipeTime);
+        // 实现自动轮播
+        let timer = setInterval(play.bind(this, true), this.swipeTime);
         this.el.addEventListener("mouseover", () => {
             clearInterval(timer);
         });
         this.el.addEventListener("mouseout", () => {
-            timer = setInterval(autoPlay.bind(this), this.swipeTime);
+            timer = setInterval(play.bind(this, true), this.swipeTime);
         });
         // 移动端手势
         let startX = 0,
@@ -249,7 +240,7 @@
             let currentLeft = this.mainList.offsetLeft;
             this.animateSwitcher = false;
             this.index = Math.round(-currentLeft / this.el.clientWidth);
-            timer = setInterval(autoPlay.bind(this), this.swipeTime);
+            timer = setInterval(play.bind(this, true), this.swipeTime);
             this.renderDom();
         });
     }
@@ -275,7 +266,6 @@
         this.renderDot();
     }
     Lcy.prototype.renderDot = function () {
-        // console.log(this.mainDot)
         this.mainDot.forEach((item, index) => {
             if ((this.index - 1) == index) {
                 item.className = "broadcastMe-spot broadcastMe-spot-active";
