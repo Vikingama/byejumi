@@ -249,7 +249,7 @@
         this.mainList.style.transition = "left " + (this.transitionTime / 1000) + "s";
         this.mainList.style.left = -this.el.clientWidth * this.index + "px";
         setTimeout(() => {
-            if (this.index <= 0) {
+            if (this.index < 1) {
                 this.mainList.style.transitionProperty = 'none';
                 this.index = this.images.length;
                 this.mainList.style.left = -this.el.clientWidth * this.index + "px";
@@ -258,9 +258,9 @@
                 this.index = 1;
                 this.mainList.style.left = -this.el.clientWidth * this.index + "px";
             }
+            this.renderDot();
             this.animateSwitcher = false;
         }, this.transitionTime);
-        this.renderDot();
     }
     Lcy.prototype.renderDot = function () {
         this.mainDot.forEach((item, index) => {
