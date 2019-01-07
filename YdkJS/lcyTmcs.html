@@ -231,26 +231,23 @@
             offsetX = this.mainList.offsetLeft;
         });
         this.el.addEventListener("touchmove", e => {
-            let changedX = e.changedTouches[0].pageX - startX;
-            let shouldX = offsetX + changedX;
+            let changedX = e.changedTouches[0].pageX - startX,
+                shouldX = offsetX + changedX;
             this.mainList.style.transitionProperty = 'none';
             this.mainList.style.left = shouldX + "px";
         });
         this.el.addEventListener("touchend", e => {
             let currentLeft = this.mainList.offsetLeft;
             this.animateSwitcher = false;
-            this.index = Math.round(-currentLeft / this.el.clientWidth);
+            this.index = -Math.round(currentLeft / this.el.clientWidth);
             timer = setInterval(play.bind(this, true), this.swipeTime);
             this.renderDom();
         });
     }
     Lcy.prototype.renderDom = function () {
-        if (this.animateSwitcher) {
-            return;
-        }
         this.animateSwitcher = true;
-        this.mainList.style.left = -this.el.clientWidth * this.index + "px";
         this.mainList.style.transition = "left " + (this.transitionTime / 1000) + "s";
+        this.mainList.style.left = -this.el.clientWidth * this.index + "px";
         setTimeout(() => {
             if (this.index <= 0) {
                 this.mainList.style.transitionProperty = 'none';
@@ -262,7 +259,7 @@
                 this.mainList.style.left = -this.el.clientWidth * this.index + "px";
             }
             this.animateSwitcher = false;
-        }, this.swipeTime);
+        }, this.transitionTime);
         this.renderDot();
     }
     Lcy.prototype.renderDot = function () {
