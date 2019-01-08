@@ -94,6 +94,12 @@
         .broadcastMe .broadcastMe-btn-right {
             right: -1px;
         }
+
+        @media screen and (max-width:768px) {
+            .broadcastMe .broadcastMe-btn {
+                display: none;
+            }
+        }
     </style>
 </head>
 
@@ -231,8 +237,15 @@
             offsetX = this.mainList.offsetLeft;
         });
         this.el.addEventListener("touchmove", e => {
-            let changedX = e.changedTouches[0].pageX - startX,
-                shouldX = offsetX + changedX;
+            let changedX = e.changedTouches[0].pageX - startX;
+            // if (Math.abs(changedX) > this.el.clientWidth) {
+            if (changedX < -this.el.clientWidth) {
+                changedX = -this.el.clientWidth;
+            } else if (changedX > this.el.clientWidth) {
+                changedX = this.el.clientWidth;
+            }
+            // }
+            let shouldX = offsetX + changedX;
             this.mainList.style.transitionProperty = 'none';
             this.mainList.style.left = shouldX + "px";
         });
