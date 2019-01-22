@@ -36,6 +36,39 @@
         <xmp id="code5"></xmp>
     </ul>
 </body>
+<script crossorigin="anonymous" src="https://lib.baomitu.com/react/16.7.0/umd/react.development.js"></script>
+<script crossorigin="anonymous" src="https://lib.baomitu.com/prop-types/15.6.2/prop-types.js"></script>
+<script>
+    console.log(window.React);
+    /*
+    Children: this.props.children - 组件子节点
+    Fragment: 一种集合，减少不必要的元素嵌套 - < ></ >，类似 vue 中的 template
+    PureComponent: 只进行数据浅比较，没有 shouldComponentUpdate 钩子函数，可以优化性能
+    StrictMode: 不会渲染出真实的 UI，可为后代元素进行额外的检查容器
+    Suspense: 和 React.lazy 搭配使用，类似于 Fragment
+    */
+    console.log(window.PropTypes);
+    /*
+    any: 
+    array: 
+    arrayOf: 
+    bool: 
+    checkPropTypes: 
+    element: 
+    exact: 
+    func: 
+    instanceOf: 
+    node: 
+    number: 
+    object: 
+    objectOf: 
+    oneOf: 
+    oneOfType: 
+    shape: 
+    string: 
+    symbol: 
+    */
+</script>
 <script>
     document.querySelector("#code1").innerText =
         `
