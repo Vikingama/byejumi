@@ -51,8 +51,6 @@
             this.domReady();
             // 绑定事件，点击开始后向后台发起请求，获取 answer...
             this.bindEvent();
-            // 滚动并弹出结果
-            // this.popAnswer();
         };
         zhuanPan.prototype.domReady = function() {
             this.container.innerHTML = `
@@ -157,11 +155,15 @@
                             this.sumBlock * this.circle +
                             this.answer -
                             this.startPos;
-                        console.log(this.step);
+                        this.main();
                     }
                 },
                 false
             );
+        };
+        zhuanPan.prototype.main = function() {
+            // 滚动并弹出结果
+            this.popAnswer();
         };
         zhuanPan.prototype.popAnswer = function() {
             alert(`已经跳转到了第 ${this.answer} 个格子`);
