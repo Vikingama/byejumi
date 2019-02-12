@@ -43,6 +43,10 @@
             this.clickable = false;
             // 格子列表
             this.blockList = null;
+            // 计时器
+            this.interval = null;
+            // 选中框当前位置
+            this.curPos = 1;
             // 初始化
             this.init();
         }
@@ -162,12 +166,22 @@
             );
         };
         zhuanPan.prototype.main = function() {
+            this.interval = setInterval(() => {
+                if (this.curPos != this.answer) {
+                    this.curPos++;
+                    this.blockList.forEach(item => {
+                        item.classList.remove("current");
+                    });
+                    this.blockList[this.curPos].classList.add("current");
+                }
+            }, 1000);
             // 滚动并弹出结果
-            this.popAnswer();
+            // this.popAnswer();
         };
         zhuanPan.prototype.popAnswer = function() {
             alert(`已经跳转到了第 ${this.answer} 个格子`);
             this.clickable = true;
+            this.startPos = this.answer;
         };
         new zhuanPan(document.querySelector("#container"), 8, 2);
     </script>
