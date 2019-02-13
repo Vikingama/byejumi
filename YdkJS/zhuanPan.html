@@ -185,19 +185,19 @@
                     this.blockList.forEach(item => {
                         item.classList.remove("current");
                     });
-                    // if (this.curPos <= 8) {
-                    //     this.blockList[this.curPos - 1].classList.add(
-                    //         "current"
-                    //     );
-                    // } else if (this.curPos > 8 && this.curPos <= 16) {
-                    //     this.blockList[16 - this.curPos - 1].classList.add(
-                    //         "current"
-                    //     );
-                    // } else {
-                    //     this.blockList[this.curPos - 16 - 1].classList.add(
-                    //         "current"
-                    //     );
-                    // }
+                    if (this.curPos <= 8) {
+                        this.blockList[this.curPos - 1].classList.add(
+                            "current"
+                        );
+                    } else if (this.curPos > 8 && this.curPos <= 16) {
+                        this.blockList[this.curPos - 8 - 1].classList.add(
+                            "current"
+                        );
+                    } else {
+                        this.blockList[this.curPos - 16 - 1].classList.add(
+                            "current"
+                        );
+                    }
                     if (this.curPos == this.step) {
                         this.startPos = this.answer;
                         this.curPos = this.answer;
@@ -205,7 +205,7 @@
                         this.popAnswer();
                     }
                 }
-            }, 500);
+            }, 300);
         };
         zhuanPan.prototype.popAnswer = function() {
             alert(`已经跳转到了第 ${this.answer} 个格子`);
