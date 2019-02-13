@@ -14,6 +14,7 @@
                 user-select: none;
             }
             #container {
+                margin: auto;
                 width: 300px;
                 height: 300px;
                 outline: 3px solid black;
@@ -31,13 +32,13 @@
             this.lineNum = 3;
             // sumBlock -> 总的格子数 n 的平方减去 n-2 的平方
             this.sumBlock = 4 * this.lineNum - 4;
-            // answer -> 结果（第 answer 个格子）,当前例子为 3X3，故 answer 介于 [1, 8]...
+            // answer -> 目标（第 answer 个格子）,当前例子为 3X3，故 answer 介于 [1, 8]...
             this.answer = answer;
             // circle -> 每次转的圈数（大于等于一）
             this.circle = circle;
-            // 起始位置，默认为一，可以根据上一个结果位置进行修改
+            // 每次抽奖的开始位置，起始位置为一，根据上一个结果位置进行修改
             this.startPos = 1;
-            // 滚动几次到达结果位置
+            // 到达结果位置所需要的步数
             this.step = 1;
             // 开始按钮能否点击，默认不能点
             this.clickable = false;
@@ -155,10 +156,22 @@
                         // 取得答案
                         this.answer = Math.floor(Math.random() * 8 + 1);
                         // 取得要跳跃的步数
-                        this.step =
-                            this.sumBlock * this.circle +
-                            this.answer -
-                            this.startPos;
+                        if (this.answer > this.startPos) {
+                            this.step =
+                                this.sumBlock * this.circle +
+                                this.answer -
+                                this.startPos;
+                        } else if (this.answer < this.startPos) {
+                            this.step =
+                                this.sumBlock * this.circle +
+                                this.startPos -
+                                this.answer;
+                        } else {
+                            this.step = this.sumBlock * this.circle;
+                        }
+                        if (this.clickable) {
+                            clearInterval(this.clickable);
+                        }
                         this.main();
                     }
                 },
@@ -167,16 +180,32 @@
         };
         zhuanPan.prototype.main = function() {
             this.interval = setInterval(() => {
-                if (this.curPos != this.answer) {
-                    this.curPos++;
+                if (this.curPos != this.step) {
+                    this.curPos = this.curPos + 1;
                     this.blockList.forEach(item => {
                         item.classList.remove("current");
                     });
-                    this.blockList[this.curPos].classList.add("current");
+                    // if (this.curPos <= 8) {
+                    //     this.blockList[this.curPos - 1].classList.add(
+                    //         "current"
+                    //     );
+                    // } else if (this.curPos > 8 && this.curPos <= 16) {
+                    //     this.blockList[16 - this.curPos - 1].classList.add(
+                    //         "current"
+                    //     );
+                    // } else {
+                    //     this.blockList[this.curPos - 16 - 1].classList.add(
+                    //         "current"
+                    //     );
+                    // }
+                    if (this.curPos == this.step) {
+                        this.startPos = this.answer;
+                        this.curPos = this.answer;
+                        clearInterval(this.clickable);
+                        this.popAnswer();
+                    }
                 }
-            }, 1000);
-            // 滚动并弹出结果
-            // this.popAnswer();
+            }, 500);
         };
         zhuanPan.prototype.popAnswer = function() {
             alert(`已经跳转到了第 ${this.answer} 个格子`);
