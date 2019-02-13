@@ -199,12 +199,11 @@
                             "current"
                         );
                     }
-                    if (this.curPos == this.step) {
-                        this.startPos = this.answer;
-                        this.curPos = this.answer;
-                        clearInterval(this.interval);
-                        this.popAnswer();
-                    }
+                } else {
+                    this.startPos = this.answer;
+                    this.curPos = this.answer;
+                    clearInterval(this.interval);
+                    this.popAnswer();
                 }
             }, 100);
         };
