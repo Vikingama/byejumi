@@ -143,6 +143,7 @@
             style.innerHTML = `
             .current {
                 outline: 3px solid orange;
+                z-index: 1;
             }
             `;
             document.head.appendChild(style);
@@ -169,8 +170,8 @@
                         } else {
                             this.step = this.sumBlock * this.circle;
                         }
-                        if (this.clickable) {
-                            clearInterval(this.clickable);
+                        if (this.interval) {
+                            clearInterval(this.interval);
                         }
                         this.main();
                     }
@@ -201,11 +202,11 @@
                     if (this.curPos == this.step) {
                         this.startPos = this.answer;
                         this.curPos = this.answer;
-                        clearInterval(this.clickable);
+                        clearInterval(this.interval);
                         this.popAnswer();
                     }
                 }
-            }, 300);
+            }, 100);
         };
         zhuanPan.prototype.popAnswer = function() {
             alert(`已经跳转到了第 ${this.answer} 个格子`);
