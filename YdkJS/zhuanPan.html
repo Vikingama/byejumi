@@ -40,9 +40,7 @@
             this.clickable = false;
             // 计时器
             this.interval = null;
-            // 每次抽奖的开始位置，起始位置为一，根据上一个结果位置进行修改
-            this.startPos = 1;
-            // 选中框当前位置
+            // 选中框当前位置，起始位置为一，根据上一个结果位置进行修改
             this.curPos = 1;
             // answer -> 目标（第 answer 个格子）,当前例子为 3X3，故 answer 介于 [1, 8]...
             this.answer = 1;
@@ -157,16 +155,16 @@
                             clearInterval(this.interval);
                         }
                         // 取得要跳跃的步数
-                        if (this.answer >= this.startPos) {
+                        if (this.answer >= this.curPos) {
                             this.step =
                                 this.sumBlock * this.circle +
                                 this.answer -
-                                this.startPos;
+                                this.curPos;
                         } else {
                             this.step =
                                 this.sumBlock * (this.circle + 1) +
                                 this.answer -
-                                this.startPos;
+                                this.curPos;
                         }
                         this.main();
                     }
@@ -177,8 +175,8 @@
         zhuanPan.prototype.main = function() {
             this.interval = setInterval(() => {
                 if (this.step != 0) {
-                    this.curPos++;
                     this.step--;
+                    this.curPos++;
                     this.blockList.forEach(item => {
                         item.classList.remove("current");
                     });
@@ -206,10 +204,9 @@
         };
         zhuanPan.prototype.popAnswer = function() {
             this.clickable = true;
-            this.startPos = this.answer;
             this.curPos = this.answer;
             clearInterval(this.interval);
-            alert(`已经跳转到了第 ${this.answer} 个格子`);
+            alert(`已经跳转到了第 ${this.curPos} 个格子`);
         };
         new zhuanPan(document.querySelector("#container"));
     </script>
