@@ -25,7 +25,7 @@
         <div id="container"></div>
     </body>
     <script>
-        function zhuanPan(container, answer, circle) {
+        function zhuanPan(container) {
             // 转盘容器
             this.container = container;
             // lineNum -> 行数/列数
@@ -35,7 +35,7 @@
             // 格子列表
             this.blockList = null;
             // circle -> 每次转的圈数（大于等于一）
-            this.circle = circle;
+            this.circle = 2;
             // 开始按钮能否点击，默认不能点
             this.clickable = false;
             // 计时器
@@ -45,7 +45,7 @@
             // 选中框当前位置
             this.curPos = 1;
             // answer -> 目标（第 answer 个格子）,当前例子为 3X3，故 answer 介于 [1, 8]...
-            this.answer = answer;
+            this.answer = 1;
             // 到达结果位置所需要的步数
             this.step = 1;
             // 初始化
@@ -151,26 +151,22 @@
                 () => {
                     if (this.clickable) {
                         this.clickable = false;
+                        // 取得答案/请求答案接口
+                        this.answer = Math.floor(Math.random() * 8 + 1);
                         if (this.interval) {
                             clearInterval(this.interval);
                         }
-                        // 取得答案
-                        this.answer = Math.floor(Math.random() * 8 + 1);
                         // 取得要跳跃的步数
-                        if (this.answer > this.startPos) {
+                        if (this.answer >= this.startPos) {
                             this.step =
                                 this.sumBlock * this.circle +
                                 this.answer -
-                                this.startPos +
-                                1;
-                        } else if (this.answer < this.startPos) {
-                            this.step =
-                                this.sumBlock * this.circle +
-                                this.startPos -
-                                this.answer +
-                                1;
+                                this.startPos;
                         } else {
-                            this.step = this.sumBlock * this.circle + 1;
+                            this.step =
+                                this.sumBlock * (this.circle + 1) +
+                                this.answer -
+                                this.startPos;
                         }
                         this.main();
                     }
@@ -180,8 +176,9 @@
         };
         zhuanPan.prototype.main = function() {
             this.interval = setInterval(() => {
-                if (this.curPos != this.step) {
-                    this.curPos = this.curPos + 1;
+                if (this.step != 0) {
+                    this.curPos++;
+                    this.step--;
                     this.blockList.forEach(item => {
                         item.classList.remove("current");
                     });
@@ -193,8 +190,12 @@
                         this.blockList[this.curPos - 8 - 1].classList.add(
                             "current"
                         );
-                    } else {
+                    } else if (this.curPos > 16 && this.curPos <= 24) {
                         this.blockList[this.curPos - 16 - 1].classList.add(
+                            "current"
+                        );
+                    } else {
+                        this.blockList[this.curPos - 24 - 1].classList.add(
                             "current"
                         );
                     }
@@ -202,12 +203,6 @@
                     this.popAnswer();
                 }
             }, 100);
-            console.log("😀😀😀");
-            console.log(`this.startPos: ${this.startPos}`);
-            console.log(`this.curPos: ${this.curPos}`);
-            console.log(`this.answer: ${this.answer}`);
-            console.log(`this.step: ${this.step}`);
-            console.log("😀😀😀");
         };
         zhuanPan.prototype.popAnswer = function() {
             this.clickable = true;
@@ -216,6 +211,6 @@
             clearInterval(this.interval);
             alert(`已经跳转到了第 ${this.answer} 个格子`);
         };
-        new zhuanPan(document.querySelector("#container"), 8, 2);
+        new zhuanPan(document.querySelector("#container"));
     </script>
 </html>
