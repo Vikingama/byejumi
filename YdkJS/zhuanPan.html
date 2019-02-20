@@ -29,7 +29,8 @@
             if (!container) {
                 return;
             }
-            if (!new.target) {
+            if (!new.target || new.target != zhuanPan) {
+                // 在构造函数中，指向被 new 调用的构造函数...
                 return new zhuanPan(container);
             }
             // 转盘容器
