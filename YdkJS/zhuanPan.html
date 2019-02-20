@@ -26,6 +26,12 @@
     </body>
     <script>
         function zhuanPan(container) {
+            if (!container) {
+                return;
+            }
+            if (!new.target) {
+                return new zhuanPan(container);
+            }
             // 转盘容器
             this.container = container;
             // lineNum -> 行数/列数
