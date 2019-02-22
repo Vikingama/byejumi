@@ -133,9 +133,42 @@
         }
         /*
             有一个数组存放了 100 个数据 0-99，要求每隔两个数删除一个数，到末尾时再循环至开头继续进行，求最后一个被删除的数字...
-                ->先将这100个数据放入队列，用while循环，终止的条件是队列里只有一个元素
-                    ->定义index变量从0开始计数，从队列头部删除一个元素，index + 1
-                        ->如果index%3 === 0 ,说明这个元素需要被移除队列，否则的话就把它添加到队列的尾部
+                ->先将这 100 个数据放入队列，用 while 循环，终止的条件是队列里只有一个元素
+                    ->定义 index 变量从 0 开始计数，从队列头部删除一个元素，index + 1
+                        ->如果 index%3 === 0 ,说明这个元素需要被移除队列，否则的话就把它添加到队列的尾部
         */
+        const sample = [];
+        for (let i = 0; i < 100; i++) {
+            sample.push(i);
+        }
+        function delRang(arr) {
+            var queue = new Queue(),
+                index = 0;
+            for (var i of arr) {
+                queue.enqueue(i);
+            }
+            while (queue.size() != 1) {
+                var item = queue.dequeue();
+                index++;
+                if (index % 3 != 0) {
+                    queue.enqueue(item);
+                }
+            }
+            console.log(queue.head()); // 90
+            return queue.head();
+        }
+        delRang(sample);
+        /*
+        斐波那契数列: 从第 3 项开始，每一项都等于前两项之和...
+            -> F(1)=1，F(2)=1, F(n)=F(n-1)+F(n-2), (n>=3，n∈N*), 需要用到递归的思想...
+        */
+        function Fibonacci(n, a = 1, b = 1) {
+            if (n <= 2) {
+                return b;
+            }
+            // 尾递归...好难懂...
+            return Fibonacci(n - 1, b, a + b);
+        }
+        console.log(Fibonacci(100));
     </script>
 </html>
