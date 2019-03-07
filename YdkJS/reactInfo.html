@@ -71,19 +71,56 @@
     console.log(window.ReactRouterDOM);
     /*
         BrowserRouter: 基于 History API 的路由模式
-        HashRouter: 基于锚点的路由模式
-        Link: ƒ Link()
-        MemoryRouter: ƒ MemoryRouter()
-        NavLink: ƒ NavLink(_ref)
-        Prompt: ƒ Prompt()
-        Redirect: ƒ Redirect()
-        Route: ƒ Route()
-        Router: ƒ Router()
-        StaticRouter: ƒ StaticRouter()
-        Switch: ƒ Switch()
-        generatePath: ƒ generatePath()
-        matchPath: ƒ matchPath(pathname)
-        withRouter: ƒ withRouter(Component)
+            <BrowserRouter
+                basename={string，所有地址的基本网址}
+                getUserConfirmation={func，确认导航}
+                forceRefresh={bool，是否在导航中使用整页刷新}
+                children={node，渲染唯一的子元素}
+            >
+                <App></App>
+            </BrowserRouter>
+        HashRouter: 基于锚点的路由模式，不推荐使用
+        Link: 声明式的，可访问的导航
+            <Link
+                to="string，链接位置的路径名"
+                to={{
+                    pathname: 链接位置的路径名
+                    search: 查询参数的字符串形式，?sort=name
+                    hash: 网址的 hash 值
+                }}
+                replace，bool，你懂的
+            >
+                导航
+            </Link>
+        MemoryRouter: 在内存中保存 URL 历史记录
+        NavLink: 特殊版的 Link, 可以添加样式
+            <NavLink
+                activeClassName="string，活动状态的类名"
+                activeStyle={{
+                    活动状态的样式
+                }}
+                exact，bool，是否启用完全匹配
+                strict，bool，是否启用严格匹配
+                isActive={func，确定链接是否处于活动状态而添加额外逻辑的函数}
+            >
+                导航
+            </NavLink>
+        Redirect: 重定向
+            <Redirect
+                to="string，重定向到 URL"
+                to={{
+                    重定向到的 Location
+                }}
+            >
+                重定向
+            </Redirect>
+        Route: 
+        Router: 
+        StaticRouter: 无状态路由，用在服务器端
+        Switch: 
+        generatePath: 
+        matchPath: 
+        withRouter: 
     */
 </script>
 <script>
