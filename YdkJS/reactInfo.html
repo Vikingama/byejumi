@@ -111,16 +111,43 @@
                 to={{
                     重定向到的 Location
                 }}
+                push，bool，为 true 时将会留下 History
+                from，string，什么地址的情况下重定向
+                exact，bool，完全匹配 from
+                strict，bool，严格匹配 from
             >
                 重定向
             </Redirect>
-        Route: 
-        Router: 
-        StaticRouter: 无状态路由，用在服务器端
-        Switch: 
-        generatePath: 
-        matchPath: 
-        withRouter: 
+        Route: 在 location 与 Route 的 path 匹配时呈现一些 UI
+            <Route
+                component
+                path
+                exact
+                strict
+                location
+                sensitive，bool，是否区分大小写
+            />
+            <Route render/>
+            <Route children/>
+        Router: 所有路由组件共用的底层接口
+            <Router
+                history
+                children
+            />
+        StaticRouter: 一个永不改变地址的 Router
+            <StaticRouter
+                basename，string
+                location，string/object
+                context，object
+                children，node
+            >
+            </StaticRouter>
+        Switch: 渲染与该地址匹配的第一个子节点 <Route> 或者 <Redirect>
+            <Switch
+                location，object
+                children，node
+            >
+            </Switch>
     */
 </script>
 <script>
