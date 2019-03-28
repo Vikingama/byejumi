@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>Event Bus</title>
+        <style>
+            .button {
+                height: 20px;
+                border-radius: 0%;
+            }
+        </style>
+    </head>
+    <body>
+        <button class="button">0</button>
+    </body>
+    <script src="./eventBus.js"></script>
+    <script>
+        let number = 0;
+        const button = document.querySelector(".button");
+        const ebs = new EventBus(button);
+        const handle = function() {
+            number++;
+            button.innerText = number;
+        };
+        const unlock = ebs.subscribe("add", handle);
+        button.onclick = () => {
+            ebs.dispatch("add");
+            if (number >= 10) {
+                ebs.unSubscribe("add", handle);
+            }
+        };
+    </script>
+</html>
