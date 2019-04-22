@@ -24,17 +24,15 @@ require.config({
                 加载 backbone 之前，应该先加载 underscore、jquery...
                 这里仅作展示，不要在一个 build 中混用 CDN 加载和 shim 配置，因为 shim 配置仅延时加载到所有的依赖已加载，而不会做任何 define 的自动装裹...
             */
-            deps: ["underscore", "jquery"],// 指定要加载的一个依赖数组...
-            callback: function () {
+            deps: ["underscore", "jquery"], // 指定要加载的一个依赖数组...
+            callback: function() {
                 // 在 deps 加载完毕后执行的函数，试了试好像并没有调用...
             },
             exports: "backbone"
         }
     },
     // 对于给定的模块前缀，使用一个不同的模块 ID 来加载该模块...
-    map: {
-
-    },
+    map: {},
     /*
         将配置信息传给一个模块，这些配置往往是 application 级别的信息，需要一个手段将它们向下传递给模块...
         要获取这些信息的模块可以加载特殊的依赖 "module"，并调用 module.config()...
@@ -48,9 +46,7 @@ require.config({
         }
     },
     // 从 Common JS 包中加载模块...
-    packages: [{
-
-    }],
+    packages: [{}],
     // 在放弃加载一个脚本之前等待的秒数，0 表示禁用等待超时。默认为 7 秒...
     waitSeconds: 10,
     // 命名一个加载上下文，允许在同一页面上加载模块的多个版本...
@@ -62,4 +58,4 @@ require.config({
 });
 require.onError = error => {
     console.log(error);
-}
+};

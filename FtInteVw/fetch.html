@@ -1,21 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>AJAX</title>
+    </head>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>AJAX</title>
-</head>
-
-<body>
-    <xmp></xmp>
-    <xmp></xmp>
-    <xmp></xmp>
-</body>
-<script>
-    document.getElementsByTagName("xmp")[0].innerHTML =
-        `
+    <body>
+        <xmp></xmp>
+        <xmp></xmp>
+        <xmp></xmp>
+    </body>
+    <script>
+        document.getElementsByTagName("xmp")[0].innerHTML = `
     new XMLHttpRequest()
         // 事件
         onabort: 在调用 abort 方法而终止连接时触发
@@ -47,8 +45,7 @@
         send() 发送请求...
         setRequestHeader() 设置HTTP请求头的值...
     `;
-    document.getElementsByTagName("xmp")[1].innerHTML =
-        `
+        document.getElementsByTagName("xmp")[1].innerHTML = `
     new WebSocket()
         binaryType: 连接所传输二进制数据的类型，DOMString、blob、arraybuffer...
         bufferedAmount: 未发送至服务器的字节数
@@ -63,8 +60,7 @@
         send: 通过 WebSocket 链接传输至服务器的数据排入队列...
         close: 关闭 WebSocket  连接或连接尝试...
     `;
-    document.getElementsByTagName("xmp")[2].innerHTML =
-        `
+        document.getElementsByTagName("xmp")[2].innerHTML = `
     fetch(URL, {
         method: GET|POST,
         headers: 请求头,
@@ -91,64 +87,66 @@
         console.error(e);
     };
     `;
-    export default function (url = "", data = {}, type = "GET") {
-        url = "https://www.baidu.com" + url;
-        type = type.toUpperCase();
-        if (type === "GET") {
-            let paraStr = "";
-            Object.keys(data).forEach(key => {
-                paraStr += key + "=" + data[key] + "&";
-            })
-            if (paraStr.length !== 0) {
-                paraStr = paraStr.substr(0, paraStr.lastIndexOf("&"));
-                url = url + "?" + paraStr;
+        export default function(url = "", data = {}, type = "GET") {
+            url = url || "https://www.baidu.com";
+            type = type.toUpperCase();
+            if (type === "GET") {
+                let paraStr = "";
+                Object.keys(data).forEach(key => {
+                    paraStr += key + "=" + data[key] + "&";
+                });
+                if (paraStr.length !== 0) {
+                    paraStr = paraStr.substr(0, paraStr.lastIndexOf("&"));
+                    url = url + "?" + paraStr;
+                }
             }
-        }
-        if (window.fetch) {
-            let fetchConfig = {
-                method: type,
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                mode: "cors",
-                credentials: "include",
-                cache: "default"
-            };
-            if (type === "POST") {
-                Object.defineProperty(fetchConfig, "body", {
-                    value: JSON.stringify(data)
+            if (window.fetch) {
+                let fetchConfig = {
+                    method: type,
+                    headers: {
+                        Accept: "application/json",
+                        "Content-Type": "application/json"
+                    },
+                    mode: "cors",
+                    credentials: "include",
+                    cache: "default"
+                };
+                if (type === "POST") {
+                    Object.defineProperty(fetchConfig, "body", {
+                        value: JSON.stringify(data)
+                    });
+                }
+                window.fetch(url, fetchConfig).then(response => {
+                    return response.json();
+                });
+            } else {
+                return new Promise((resolve, reject) => {
+                    let xhr, sendData;
+                    if (window.XMLHttpRequest) {
+                        xhr = new XMLHttpRequest();
+                    } else {
+                        xhr = new ActiveXObject();
+                    }
+                    if (type === "POST") {
+                        sendData = JSON.stringify(data);
+                    }
+                    xhr.open(type, url, true);
+                    xhr.setRequestHeader(
+                        "Content-type",
+                        "application/x-www-form-urlencoded"
+                    );
+                    xhr.send(sendDate);
+                    xhr.onreadystatechange = () => {
+                        if (xhr.readyState == 4) {
+                            if (xhr.status == 200) {
+                                resolve(JSON.parse(xhr.response));
+                            } else {
+                                reject(xhr);
+                            }
+                        }
+                    };
                 });
             }
-            window.fetch(url, fetchConfig).then(response => {
-                return response.json();
-            });
-        } else {
-            return new Promise((resolve, reject) => {
-                let xhr, sendData;
-                if (window.XMLHttpRequest) {
-                    xhr = new XMLHttpRequest();
-                } else {
-                    xhr = new ActiveXObject();
-                }
-                if (type === "POST") {
-                    sendData = JSON.stringify(data);
-                }
-                xhr.open(type, url, true);
-                xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-                xhr.send(sendDate);
-                xhr.onreadystatechange = () => {
-                    if (xhr.readyState == 4) {
-                        if (xhr.status == 200) {
-                            resolve(JSON.parse(xhr.response));
-                        } else {
-                            reject(xhr);
-                        }
-                    }
-                }
-            })
         }
-    };
-</script>
-
+    </script>
 </html>

@@ -7,14 +7,14 @@
 */
 // 一一引用，一一加载...
 var gulp = require("gulp"),
-    uglify = require('gulp-uglify');
+    uglify = require("gulp-uglify");
 /*
     使用 gulp-load-plugins 模块，可以加载 package.json 文件中所有的 gulp 模块...
     var gulp = require('gulp'),
         gulpLoadPlugins = require('gulp-load-plugins'),
         plugins = gulpLoadPlugins();
 */
-gulp.task("taskName", function () {
+gulp.task("taskName", function() {
     /*
         任务代码/函数，通过 gulp taskName 调用...
         task 将以最大的并发数执行，gulp 会一次性运行所有的 task 并且不做任何等待；
@@ -46,21 +46,23 @@ gulp.task("taskName", function () {
         // 任务代码/函数
     })
 */
-gulp.task("js", ["css"], function () {
+gulp.task("js", ["css"], function() {
     // js/app.js：指定确切的文件名...
     // js/*.js：某个目录所有后缀名为js的文件...
     // js/**/*.js：某个目录及其所有子目录中的所有后缀名为js的文件...
     // !js/app.js：除了 js/app.js 以外的所有文件...
     // *.+(js css)：匹配项目根目录下，所有后缀名为 js 或 css 的文件...
-    gulp.src('js/**/*.js')
+    gulp.src("js/**/*.js")
         // gulp.src(['js/**/*.js', '!js/**/*.min.js'])
         .pipe(uglify())
-        .pipe(gulp.dest("dist/js", {
-            // 写入路径的基准目录...(默认当前目录...)
-            cwd: "./",
-            // 可读可写可执行...
-            mode: 0777
-        }))
+        .pipe(
+            gulp.dest("dist/js", {
+                // 写入路径的基准目录...(默认当前目录...)
+                cwd: "./",
+                // 可读可写可执行...
+                mode: 0777
+            })
+        )
         // 自动刷新浏览器...
         .pipe(livereload());
 });
@@ -71,6 +73,6 @@ gulp.task("js", ["css"], function () {
 // 默认任务代码/函数，直接 gulp 即可调用
 gulp.task("default", ["html", "css", "js"]);
 // 设置任务依赖可以使个个任务按顺序执行...
-gulp.task("html", function () { });
+gulp.task("html", function() {});
 // ["html"] ---> html 执行完后才会执行 css 任务
-gulp.task("css", ["html"], function () { });
+gulp.task("css", ["html"], function() {});
