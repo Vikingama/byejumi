@@ -1,32 +1,37 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>React Data</title>
+        <style>
+            xmp {
+                border: 1px dashed black;
+                font-family: "Microsoft Yahei";
+            }
+        </style>
+    </head>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>React Data</title>
-    <style>
-        xmp {
-            border: 1px dashed black;
-            font-family: "Microsoft Yahei";
-        }
-    </style>
-</head>
-
-<body>
-    <p>组件数据：</p>
-    <ul>
-        <li>props：自上而下传递变量、传递函数、传递组件、props.children；相当于 HTML 的 attributes 属性;；props 是只读的、可以设置默认值、可以进行类型检查...</li>
-        <li>state：初始化、setState 方法、向下传递数据...</li>
-        <xmp id="state"></xmp>
-        <li>context：实验性质的 API，由于 React 中数据自上而下传递，当组件嵌套增多，数据传递困难...</li>
-        <xmp id="context"></xmp>
-    </ul>
-</body>
-<script>
-    document.querySelector('#state').innerHTML =
-        `
+    <body>
+        <p>组件数据：</p>
+        <ul>
+            <li>
+                props：自上而下传递变量、传递函数、传递组件、props.children；相当于
+                HTML 的 attributes 属性; props
+                是只读的、可以设置默认值、可以进行类型检查...
+            </li>
+            <li>state：初始化、setState 方法、向下传递数据...</li>
+            <xmp id="state"></xmp>
+            <li>
+                context：实验性质的 API，由于 React
+                中数据自上而下传递，当组件嵌套增多，数据传递困难...
+            </li>
+            <xmp id="context"></xmp>
+        </ul>
+    </body>
+    <script>
+        document.querySelector("#state").innerHTML = `
     class CurrencyConvertor extends React.Component {
         constructor() {
             super();
@@ -77,8 +82,7 @@
         </p>
     }
     `;
-    document.querySelector('#context').innerHTML =
-        `
+        document.querySelector("#context").innerHTML = `
     const UserInfo = (props, context) => (
         <div className="UserInfo-name">
             {context.lastName + ", " + props.firstName}
@@ -117,6 +121,5 @@
         lastName: React.PropTypes.string
     }
     `;
-</script>
-
+    </script>
 </html>
