@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>generator syntax</title>
+    </head>
+
+    <body>
+        Generator
+        函数是一个状态机，封装了多个内部状态，它的返回值是一个遍历器对象，可以依次遍历内部的每个状态...
+        <hr />
+        Generator 函数的特性：
+        <ul>
+            <li>function 关键字与函数名之间有一个星号...</li>
+            <li>函数体内部使用 yield 表达式，定义不同的内部状态...</li>
+        </ul>
+    </body>
+    <script>
+        function* wow() {
+            // 三种状态：www、ooo 和 return 语句...
+            yield "www";
+            // yield --- 暂停标志，只能用在 Generator 函数里...
+            yield "ooo";
+            return "ending";
+        }
+        // 调用后，该函数并不执行，返回的也不是函数运行结果，而是一个指向内部状态的"指针对象"...
+        var wos = wow();
+        console.log(wos);
+        // Generator 函数开始执行，直到遇到第一个 yield 表达式为止...
+        console.log(wos.next()); // {value: "www", done: false}
+        // Generator 函数从上次 yield 表达式停下的地方，一直执行到下一个 yield 表达式...
+        console.log(wos.next()); // {value: "ooo", done: false}
+        // Generator 函数从上次 yield 表达式停下的地方，一直执行到 return 语句...
+        console.log(wos.next()); // {value: "ending", done: true}
+        for (let i of wos) {
+            // www ooo
+            console.log(i);
+        }
+
+        function* fx() {
+            console.log("执行了");
+        }
+        var gxtor = fx();
+        setTimeout(() => {
+            gxtor.next(); // 执行了
+        }, 3000);
+        var atp = [1, [[2, 3], "4"], [5, 6]];
+
+        function* flat(arr) {
+            /*arr.forEach(function (i) {
+            if (typeof i !== 'number') {
+                // 会报错，forEach 是一个普通函数...
+                yield* flat(item);
+            } else {
+                yield item;
+            }
+        });*/
+            for (var i = 0, length = arr.length; i < length; i++) {
+                var item = arr[i];
+                if (typeof i !== "number") {
+                    yield* flat(item);
+                } else {
+                    yield item;
+                }
+            }
+        }
+        for (var i of flat(atp)) {
+            console.log(i); // 1 [[2, 3], "4"] [5, 6]
+        }
+        var mit = {};
+        mit[Symbol.iterator] = function*() {
+            yield 1;
+            yield 2;
+            yield 3;
+        };
+        console.log([...mit]); // [1, 2, 3]
+        // 外部向 Generator 函数内部注入值...
+        function* sample() {
+            for (var i = 0; true; i++) {
+                // yield 本身没有返回值，故一般情况，reset 为 undefined...
+                let reset = yield i;
+                // next() 方法可以带一个参数，该参数会被当做"""上一个""" yield 的返回值...
+                if (reset) {
+                    i = -1;
+                }
+            }
+        }
+        var sf = sample();
+        console.log(sf);
+        console.log(sf.next()); // {value: 0, done: false}
+        console.log(sf.next()); // {value: 1, done: false}
+        console.log(sf.next()); // {value: 2, done: false}
+        // i 被重置为 -1...
+        console.log(sf.next(true)); // {value: 0, done: false}
+        function* goos(x) {
+            var y = 2 * (yield x + 1);
+            var z = yield y / 3;
+            return x + y + z;
+        }
+        var es = goos(5);
+        // 5+1
+        console.log(es.next()); // {value: 6, done: false}
+        // 24/3
+        console.log(es.next(12)); // {value: 8, done: false}
+        // 5+24+13
+        console.log(es.next(13)); // {value: 42, done: true}
+        // for...of 循环可以自动遍历 Generator 函数时生成的 Iterator 对象，且不再需要调用 next 方法...
+        function* mon() {
+            yield 1;
+            yield 2;
+            yield 3;
+            return 4;
+        }
+        // 一旦 next 方法的返回对象的 done 属性为 true，for...of 循环就会中止，且不包含该返回对象...
+        for (var i of mon()) {
+            // ===> 4 不会循环出来...
+            console.log(i); // 1 2 3
+        }
+        console.log([...mon()]); // [1, 2, 3]
+        console.log(Array.from(mon())); // [1, 2, 3]
+        let [xx, yy] = mon();
+        console.log(xx, yy); // 1 2
+        // 斐波那契数列
+        function* fibonacci() {
+            let [pre, cur] = [0, 1];
+            for (;;) {
+                yield cur;
+                [pre, cur] = [cur, pre + cur];
+            }
+        }
+        for (let n of fibonacci()) {
+            if (n > 100) {
+                break;
+            }
+            console.log(n);
+        }
+        // Generator.prototype.throw --- 在函数体外抛出错误。在 Generator 函数内部捕获（需要函数内部有 try...catch）...
+        var generous = function*() {
+            try {
+                yield;
+            } catch (error) {
+                console.log("内部捕获：" + error);
+            }
+        };
+        var frank = generous();
+        frank.next(); // 要被内部捕获，前提是必须至少执行过一次 next 方法...
+        try {
+            frank.throw("a"); // 被内部捕获...
+            frank.throw("b"); // 内部 catch 捕获过之后，由外部 catch 捕获...
+            frank.throw("c"); // 没有被捕获...
+        } catch (e) {
+            console.log("外部捕获：" + e);
+        }
+        var aiji = function*() {
+            while (true) {
+                yield;
+                console.log("内部捕获：" + e);
+            }
+        };
+        var jio = aiji();
+        jio.next();
+        try {
+            jio.throw("a");
+            jio.throw("b");
+        } catch (e) {
+            console.log("外部捕获：" + e); // 外部捕获：a
+        }
+        // Generator.prototype.return --- 返回给定的值，并且终结遍历 Generator 函数...
+        function* rege() {
+            yield 1;
+            yield 2;
+            yield 3;
+        }
+        var re = rege();
+        console.log(re.next()); // {value: 1, done: false}
+        console.log(re.return()); // {value: undefined, done: true}
+        // console.log(re.return("foo")); // {value: "foo", done: true}
+        console.log(re.next()); // {value: undefined, done: true}
+        /*
+            next() --- 将 yield 表达式替换成一个值...
+            throw() --- 将 yield 表达式替换成一个 throw 语句...
+            return() --- 将 yield 表达式替换成一个 return 语句...
+        */
+        function* g1() {
+            yield "a";
+            yield "b";
+        }
+
+        function* g2() {
+            yield "x";
+            // g1(); // 没有效果，需要借助 yield* 表达式...
+            yield* g1();
+            yield "y";
+        }
+        for (let i of g2()) {
+            console.log(i); // x a b y
+        }
+
+        function* g3() {
+            yield "w";
+        }
+
+        function* g4() {
+            yield "q";
+            yield g3(); // yield 会返回一个遍历器...
+            yield "e";
+        }
+        for (let i of g4()) {
+            console.log(i); // q g3{<suspended>} e
+        }
+        const tree = ["a", ["b", "c"], ["d", ["e", "f"]]];
+
+        function* fuckTree(tree) {
+            if (Array.isArray(tree)) {
+                for (let i = 0; i < tree.length; i++) {
+                    yield* fuckTree(tree[i]);
+                }
+            } else {
+                return tree;
+            }
+        }
+        for (var item of fuckTree(tree)) {
+            console.log("fuckTree: " + item); // 好像没执行...
+        }
+        var star1 = {
+            *mg() {}
+        };
+        // 等价于...
+        var star2 = {
+            mg: function*() {}
+        };
+        // 状态机...
+        var ticking = true;
+        var clock1 = function() {
+            if (ticking) {
+                console.log("Tick...");
+            } else {
+                console.log("Tock...");
+            }
+            !ticking;
+            // clock1();
+        };
+        var clock2 = function*() {
+            while (true) {
+                console.log("Tick...");
+                yield;
+                console.log("Tock...");
+                yield;
+            }
+        };
+    </script>
+</html>

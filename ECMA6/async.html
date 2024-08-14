@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>async</title>
+    </head>
+
+    <body>
+        async --- Generator 函数的语法糖，将 * 替换为 async，将 yield 替换为
+        await...
+        <hr />
+        async 函数返回一个 Promise 对象，可以使用 then 方法添加回调函数...
+        <hr />
+        当函数执行的时候，一旦遇到 await
+        就会先返回，等到异步操作完成，再接着执行函数体内后面的语句...
+        <hr />
+        async 对比 Generator：
+        <ul>
+            <li>内置执行器，不需要调用 next 方法...</li>
+            <li>
+                更好的语义，async 表示函数里有异步操作，await
+                表示紧跟在后面的表达式需要等待结果...
+            </li>
+            <li>更广的适用性...</li>
+            <li>返回值是 Promise，可以用 then 方法指定下一步的操作...</li>
+        </ul>
+    </body>
+    <script>
+        async function timeout(ms) {
+            await new Promise(resolve => {
+                setTimeout(resolve, ms);
+            });
+        }
+        async function asyncPrint(value, ms) {
+            await timeout(ms);
+            console.log(value);
+        }
+        asyncPrint("hello...", "3000");
+        // 函数声明
+        async function sample1() {}
+        // 函数表达式
+        const sample2 = async function() {};
+        // 作为对象的方法
+        let objekt = {
+            async sample3() {}
+        };
+        objekt.sample3().then();
+        // 箭头函数
+        const sample4 = async () => {};
+        // 作为类的方法
+        class Clazz {
+            async sample4() {}
+        }
+        // async 返回的是 Promise 对象
+        async function p1() {
+            return "ring...";
+        }
+        console.log(p1()); // Promise {<resolved>: "ring..."}
+        p1().then(v => console.log(v)); // ring...
+        async function p2() {
+            // 抛出错误，Promise 变为 reject 状态...
+            throw new Error("bingo...");
+        }
+        p2().then(
+            v => alert(v),
+            e => console.log(e) // Error: bingo...
+        );
+        /*
+        只有 async 函数内部的异步操作执行完，才会执行 then 方法指定的回调函数...
+        await 命令后面是一个 Promise 对象。如果不是，会被转成一个立即 resolve 的 Promise 对象...
+        await 命令后面的 Promise 对象如果变为 reject 状态，则 reject 的参数会被 catch 方法的回调函数接收到...
+        */
+        async function p3() {
+            await Promise.reject("refuse...");
+            // 只要 await 语句后面的 Promise 变为 reject，那么整个 async 函数都会中断执行...
+            await Promise.reject("confuse..."); // 不会执行...
+        }
+        p3().then(
+            v => alert(v),
+            e => console.log(e) // refuse...
+        );
+        async function p4() {
+            try {
+                // 放入 try...catch 中，就不会因为 reject 导致 async 停止运行...
+                await Promise.reject("try...");
+            } catch (error) {
+                console.log(error); // try...
+            }
+            await Promise.reject("do...");
+        }
+        p4().then(
+            v => alert(v),
+            e => console.log(e) // do...
+        );
+
+        function doSomething() {}
+        async function p5() {
+            /*try {
+                await doSomething();
+            } catch (e) {
+                console.log(e);
+            }*/
+            await doSomething()
+                // 另一种写法...
+                .catch(e => {
+                    console.log(e);
+                });
+        }
+        // await 后边的异步操作，如果不存在继发关系，最好同时触发...
+        async function p6() {
+            // 继发操作
+            let fff = await doSomething();
+            let jjj = await doSomething();
+            // 同时触发
+            let [ppp, qqq] = await Promise.all([doSomething(), doSomething()]);
+            // 同时触发
+            let pppPromise = doSomething();
+            let qqqPromise = doSomething();
+            let mmm = await pppPromise();
+            let nnn = await qqqPromise();
+        }
+        // await 只能在 async 函数中调用，在普通函数中会报错...
+        let db = {
+            post(v) {
+                console.log(v);
+            }
+        };
+        async function e1(db) {
+            let docs = [1, 2, 3];
+            try {
+                // Uncaught SyntaxError: await is only valid in async function
+                // docs.forEach(function(doc){
+                //     await db.post(doc)
+                // })
+                // 可能出错...
+                // docs.forEach(async function(doc){
+                //     await db.post(doc)
+                // })
+                for (let doc of docs) {
+                    await db.post(doc);
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        // 假定某个 DOM 元素上面，部署了一系列的动画，前一个动画结束，才能开始后一个...
+        function aniPromise(ele, animations) {
+            let ret = null,
+                p = Promise.resolve();
+            for (let a of animations) {
+                p = p.then(function(res) {
+                    ret = res;
+                    return a(ele);
+                });
+            }
+            return p
+                .catch(function(error) {
+                    console.log(error);
+                })
+                .then(function() {
+                    return ret;
+                });
+        }
+        function aniGenerator(ele, animations) {
+            // spawn --- 自动执行器...
+            return spawn(function*() {
+                let ret = null;
+                try {
+                    for (let a of animations) {
+                        ret = yield a(ele);
+                    }
+                } catch (error) {
+                    console.log(error);
+                }
+                return ret;
+            });
+        }
+        async function aniAsync(ele, animations) {
+            let ret = null;
+            try {
+                for (let a of animations) {
+                    ret = await a(elem);
+                }
+            } catch (error) {
+                console.log(error);
+            }
+            return ret;
+        }
+        // 异步遍历器 --- 调用遍历器的 next 方法，返回的是一个 Promise 对象...
+        // asyncIterator.next().then(({ value, done }) => {
+        //     /*
+        //     同步遍历器部署在 Symbol.iterator;
+        //     异步遍历器部署在 Symbol.asyncIterator...
+        //     异步遍历器与同步遍历器最终行为是一致的，只是会先返回 Promise 对象，作为中介...
+        //     */
+        // });
+        /*
+        for...of        循环同步 iterator
+        for await...of  循环异步 iterator，也可循环同步 iterator
+        */
+        // 异步 Generator 函数 --- async 函数与 Generator 函数的结合...
+        async function* gen() {
+            yield "hello";
+            yield "bye";
+        }
+        const genIter = gen();
+        genIter.next().then(v => {
+            console.log(v); // {value: "hello", done: false}
+        });
+        genIter.next().then(v => {
+            console.log(v); // {value: "bye", done: false}
+        });
+    </script>
+</html>

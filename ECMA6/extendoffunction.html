@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>extend of function</title>
+    </head>
+
+    <body></body>
+    <script>
+        function defaVa(x, y = "World") {
+            // 参数变量是默认声明的，不能用 let 或 const 再次声明...
+            console.log(x + " " + y);
+        }
+        defaVa("Hello"); // Hello World
+        defaVa("Hello", ""); // Hello
+        defaVa("Hi", "Linda"); // Hi Linda
+        try {
+            // function worry(x, x, y, y = 10) {
+            //     // 报错
+            // }
+        } catch (error) {
+            console.log(error);
+        } finally {
+            function right(x, x, y, y) {
+                // 不报错
+            }
+        }
+        let x = 100;
+
+        function woo(p = x + 1) {
+            console.log(p);
+            x++;
+        }
+        woo(); // 101
+        woo(); // 102
+        function resove({ x, y = 5 } = {}) {
+            // x 默认值为 undefined...
+            console.log(x, y);
+        }
+        resove(); // undefined, 5
+        resove({}); // undefined, 5
+        resove(5); // undefined, 5
+        resove({
+            x: 10,
+            y: 10
+        }); // 10, 10
+        // 函数设定默认值后，length 属性将失真(length 原本指函数预期传入的参数个数)...
+        console.log(defaVa.length); // 1
+        console.log(resove.length); // 0
+        {
+            let x = 10;
+            // 一旦设置了参数的默认值，函数进行声明初始化时，参数会形成一个单独的作用域；等到初始化结束，这个作用域才消失...
+            function f1(x, y = x) {
+                console.log(x, y); // 100 100
+            }
+            f1(100);
+            console.log(x); // 10
+            let z = 10;
+
+            function f2(c = z) {
+                let z = 20;
+                console.log(z, c); // 20 100
+            }
+            f2(100);
+            console.log(z); // 10
+        }
+        let touch = "outer";
+        // 函数参数形成的单独作用域里面，并没有定义变量 touch，所以 touch 指向外层的全局变量 touch...
+        function barz(funz = () => touch) {
+            let touch = "inner";
+            console.log(funz());
+        }
+        barz(); // outer
+        (function() {
+            var x = 1; // 第一层作用域
+
+            function foo(
+                x,
+                y = function() {
+                    x = 2; // 第二层作用域 ---> 指向同为参数的 foo 的形参 x
+                    console.log(x); // 2
+                }
+            ) {
+                var x = 3; // 第三层作用域
+                y();
+                console.log(x); // 3
+            }
+            foo();
+            console.log(x); // 1
+            console.log("－O－");
+            var xx = 1; // 第一层作用域
+
+            function oxo(
+                xx,
+                yy = function() {
+                    xx = 2; // 第二层作用域 --->
+                    console.log(xx); // 2
+                }
+            ) {
+                xx = 3; // 第二层作用域
+                yy();
+
+                console.log(xx); // 2
+            }
+            oxo();
+            console.log(xx); // 1
+        })();
+        // rest 参数 --- 获取传给函数的多于的参数，不同于 arguments，它是一个真正的数组...
+        function restVa(...values) {
+            // 之后不能再跟形参，否则会报错...
+            for (var item of values) {
+                console.log(item); // 1 4 7
+            }
+        }
+        restVa(1, 4, 7);
+        // 函数 length 属性不包括 rest 参数...
+        console.log(function(...args) {}.length); // 0
+        console.log(function(a, ...args) {}.length); // 1
+        console.log(function(a, b) {}.length); // 2
+        // 函数内部可以设置严格模式(函数使用了默认值、解构赋值、或者扩展运算符除外，会报错)...
+        console.log(function() {}.name); // ""
+        console.log(function sara() {}.name); // sara
+        var bare = function() {},
+            plz = function zlp() {},
+            ooo = new Function();
+        console.log(bare.name); // bare
+        console.log(plz.name); // zlp
+        console.log(ooo.name); // anonymous
+        // bind 返回的函数，name 属性值会加上 bound 前缀...
+        console.log(bare.bind({}).name); // bound bare
+        /*
+        箭头函数：
+            this 指向定义时所在的对象，而不是使用时所在的对象(this 指向固定)...
+            不可使用 new 命令(不能用作构造函数)...
+            不可使用 arguments 对象，可使用 rest 参数...
+            不可使用 yield 命令(不能用作 Generator 函数)...
+        箭头函数根本没有自己的 this，导致内部的 this 就是外层代码块的 this；
+        因为箭头函数没有 this，所以就不能用作构造函数...
+        同样，作用在箭头函数上的 call、apply、bind 失效...
+        */
+        function arrows() {
+            // this 都指向 arrows 的 this
+            return () => {
+                return () => {
+                    return () => {
+                        console.log("id: " + this.id);
+                    };
+                };
+            };
+        }
+        var ans = arrows.call({
+            id: 123
+        });
+        ans.call({
+            id: 456
+        })()(); // 123
+        ans().call({
+            id: 789
+        })(); // 123
+        ans()().call({
+            id: "000"
+        }); // 123
+        // 双冒号运算符 ---> 对象::函数 ---> 将左边的对象，作为上下文环境（即 this 对象），绑定到右边的函数上面...
+        /*{id: "fuje"}::function (){
+            console.log(this);
+        }*/
+        // 尾调用 ---> 某个函数的最后一步是调用另一个函数...
+        function forDo(...values) {
+            console.log(values);
+        }
+
+        function doFor(...rest) {
+            return forDo(rest);
+        }
+        doFor(1, 11, 111, 1111);
+        // 尾递归 ---> 尾调用自身...
+        function fibonacci(n) {
+            if (n <= 1) {
+                return 1;
+            }
+            return arguments.callee(n - 1) + arguments.callee(n - 2);
+        }
+        console.log(fibonacci(10)); // 89
+        // fibonacci(100); // 死机...
+        function wFibonacci(n, ac1 = 1, ac2 = 1) {
+            if (n <= 1) {
+                return ac2;
+            }
+            return wFibonacci(n - 1, ac2, ac1 + ac2);
+        }
+        console.log(wFibonacci(1000)); // 7.0330367711422765e+208
+        // 函数柯里化 ---> 将多参数的函数转换成单参数的形式...
+        console.log("to be continued...");
+    </script>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>extend of array</title>
+    </head>
+
+    <body>
+        <div data-p="1">bnm</div>
+        <div data-p="2">vbn</div>
+        <div data-p="3">cvb</div>
+    </body>
+    <script>
+        // 扩展运算符，好比 rest 参数的逆运算，将数组转为用逗号分隔的参数序列...
+        console.log(...[1, 2, 3]); // 1 2 3
+        console.log(...document.querySelectorAll("div")); // <div></div> <div></div> <div></div>
+        function add(x, y) {
+            return x + y;
+        }
+        console.log(add(...[1, 2])); // 3
+        function pushArr(array, ...items) {
+            array.push(...items);
+        }
+        var arr = [];
+        pushArr(arr, 1, 2, 3, 4, 5, 6);
+        console.log(arr); // [1, 2, 3, 4, 5, 6]
+        console.log([...[], 1, ...[2, 3]]); // [1, 2, 3]
+        // 扩展运算符可用来替代 apply...
+        console.log(Math.max.apply(null, [1, 5, 9, 3, 5, 7])); // 9
+        console.log(Math.max(...[1, 5, 9, 3, 5, 7])); // 9
+        console.log(Math.max(1, 5, 9, 3, 5, 7)); // 9
+        var arr1 = [1, 5, 9],
+            arr2 = [3, 5, 7],
+            arr3 = [2, 5, 8];
+
+        Array.prototype.push.apply(arr1, arr2);
+        console.log(arr1); // [1, 5, 9, 3, 5, 7]
+        arr1.push(...arr3);
+        console.log(arr1); // [1, 5, 9, 3, 5, 7, 2, 5, 8]
+        let a1 = [1, 2, 3, 4, 5],
+            a2,
+            a3;
+        a2 = [...a1];
+        [...a3] = a1;
+        a1[2] = 0;
+        console.log(a1); // [1, 2, 0, 4, 5]
+        console.log(a2); // [1, 2, 3, 4, 5]
+        console.log(a3); // [1, 2, 3, 4, 5]
+        // 使用扩展运算符合并数组...
+        var o1 = [
+                {
+                    name: "ooo"
+                }
+            ],
+            o2 = [
+                {
+                    age: 24
+                }
+            ];
+        let o3 = [...o1, ...o2]; // 浅复制...
+        let o4 = o1.concat(o2); // 浅复制...
+        o1[0].name = "lll";
+        console.log(o3); // [{name: "lll"}, {age: 24}]
+        console.log(o4); // [{name: "lll"}, {age: 24}]
+        console.log([..."HELLO"]); // ["H", "E", "L", "L", "O"]
+        // Array.from() --- 将两类对象转换为真正的数组，类数组(必须具有 length 属性)和可遍历对象...
+        let arrLike = {
+            0: "a",
+            1: "b",
+            2: "c",
+            length: 3
+        };
+        // ES5
+        console.log([].slice.call(arrLike)); // ["a", "b", "c"]
+        // ES6
+        console.log(Array.from(arrLike)); // ["a", "b", "c"]
+        let divEles = document.querySelectorAll("div");
+        console.log(
+            Array.from(divEles).filter(item => {
+                return item.dataset.p == 2;
+            })
+        );
+        console.log(Array.from("YOU")); // ["Y", "O", "U"]
+        console.log(Array.from([1, 2, 3])); // [1, 2, 3]
+        console.log(
+            Array.from({
+                length: 3
+            })
+        ); // [undefined, undefined, undefined]
+        let arrSeem = {
+            0: "ry",
+            1: "qe",
+            2: "wr",
+            3: "et",
+            4: "tu",
+            length: 3
+        };
+        console.log(Array.from(arrSeem, i => i + "s")); // ["rys", "qes", "wrs"]
+        console.log(Array.from(divEles, i => i.textContent)); // ["bnm", "vbn", "cvb"]
+        console.log(Array.from([1, , 2, , 3], i => i || 0)); // [1, 0, 2, 0, 3]
+        // Array.of() --- 将一组值转换为数组...
+        console.log(Array()); // []
+        console.log(Array(3)); // [, , ]
+        console.log(Array(1, 2, 3)); // [1, 2, 3]
+        console.log(Array.of()); // []
+        console.log(Array.of(3)); // [3]
+        console.log(Array.of(1, 2, 3)); // [1, 2, 3]
+        // find() --- 找出"第一个"符合条件的数组成员，如果没有找到则返回 undefined...
+        console.log([1, 2, 3].find(n => n > 2)); // 3
+        console.log([1, 2, 3].find(n => n > 3)); // undefined
+        // findexIndex() --- 返回"第一个"符合条件的数组成员的位置，如果所有成员都不符合条件，则返回 -1...
+        console.log(
+            [1, 22, 333, 4444, 55555].findIndex((value, index, arr) => {
+                console.log(value); // 每一项
+                console.log(index); // 对应的下标
+                console.log(arr); // 调用数组
+                return value > 300;
+            })
+        );
+
+        function example(i) {
+            return i > this.age;
+        }
+        let person = {
+            name: "jsk",
+            age: 45
+        };
+        console.log([1, 5, 9, 77, 55, 33].find(example, person)); // 77 --- 第二个参数(可选)是绑定回调函数的 this 对象...
+        // fill() --- 使用给定值，填充一个数组...
+        console.log([1, 2, 3, 4, 5].fill("ftg")); // ["ftg", "ftg", "ftg", "ftg", "ftg"]
+        console.log(new Array(3).fill(3)); // [3, 3, 3]
+        // fill(填充物, 开始位置, 结束位置(不包括))
+        console.log([0, 1, 2, 3, 4, 5, 6, 7].fill("we", 3, 5)); // [0, 1, 2, "we", "we", 5, 6, 7]
+        /*
+        entries() --- 对键值对遍历...
+        keys() --- 对键名遍历...
+        values() --- 对键值遍历...
+        includes() --- 是否包含给定的值...
+        */
+        var ass = ["a", "b", "c"];
+        for (let index of ass.keys()) {
+            console.log(index); // 0 1 2
+        }
+        for (let index of ass.values()) {
+            console.log(index); // a b c
+        }
+        for (let index of ass.entries()) {
+            console.log(index); // [0, "a"] [1, "b"] [2, "c"]
+        }
+        var bals = ass.entries();
+        console.log(bals); // Array Iterator {}
+        console.log(bals.next().value); // [0, "a"]
+        console.log(bals.next().value); // [1, "b"]
+        console.log(bals.next().value); // [2, "c"]
+        console.log(bals.next().value); // undefined
+        var vps = [1, 2, 3, NaN, null, undefined];
+        console.log(vps.includes(Number.POSITIVE_INFINITY)); // false
+        console.log(vps.includes(NaN)); // true
+        console.log(vps.includes(null)); // true
+        console.log(vps.includes(undefined)); // true
+    </script>
+</html>

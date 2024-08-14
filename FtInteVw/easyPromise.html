@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>Easy Promise</title>
+    </head>
+
+    <body></body>
+    <script>
+        const PENDING = "pending",
+            RESOLVED = "resolved",
+            REJECTED = "rejected";
+
+        function EasyPromise(fn) {
+            const that = this;
+            // Promise 状态
+            that.state = PENDING;
+            // 用于保存 resolve/reject 传入的值
+            that.value = null;
+            // 保存 then 中的回调
+            that.resolvedCallbacks = [];
+            that.rejectedCallbacks = [];
+            // resolve 函数
+            function resolve(value) {
+                if (value instanceof EasyPromise) {
+                    return value.then(resolve, reject);
+                }
+                setTimeout(() => {
+                    if (that.state === PENDING) {
+                        that.state = RESOLVED;
+                        that.value = value;
+                        that.resolvedCallbacks.map(item => item(that.value));
+                    }
+                }, 0);
+            }
+            // reject 函数
+            function reject(value) {
+                setTimeout(() => {
+                    if (that.state === PENDING) {
+                        that.state = REJECTED;
+                        that.value = value;
+                        that.rejectedCallbacks.map(item => item(that.value));
+                    }
+                }, 0);
+            }
+            // 执行传入的函数
+            try {
+                fn(resolve, reject);
+            } catch (e) {
+                reject(e);
+            }
+        }
+        EasyPromise.prototype.then = function(onFulfilled, onRejected) {
+            const that = this;
+            onFulfilled =
+                typeof onFulfilled === "function" ? onFulfilled : v => v;
+            onRejected =
+                typeof onRejected === "function"
+                    ? onRejected
+                    : r => {
+                          throw r;
+                      };
+            if (that.state === PENDING) {
+                return (p = new EasyPromise((resolve, reject) => {
+                    that.resolvedCallbacks.push(() => {
+                        try {
+                            const x = onFulfilled(that.value);
+                            resolutionProcedure(p, x, resolve, reject);
+                        } catch (e) {
+                            reject(e);
+                        }
+                    });
+                    that.rejectedCallbacks.push(() => {
+                        try {
+                            const x = onRejected(that.value);
+                            resolutionProcedure(p, x, resolve, reject);
+                        } catch (e) {
+                            reject(e);
+                        }
+                    });
+                }));
+            }
+            if (that.state === RESOLVED) {
+                onFulfilled(that.value);
+            }
+            if (that.state === REJECTED) {
+                onRejected(that.value);
+            }
+
+            function resolutionProcedure(p, x, resolve, reject) {
+                if (p === x) {
+                    return reject(new TypeError("Error"));
+                }
+            }
+        };
+    </script>
+</html>

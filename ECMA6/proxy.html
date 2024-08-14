@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>proxy</title>
+    </head>
+
+    <body>
+        Proxy ---
+        修改某些操作的默认行为，等同于在语言层面做出修改，属于"元编程"...
+        <hr />
+        Proxy
+        可以理解成，在目标对象之前架设一层"拦截"，外界对该对象的访问，都必须先通过这层"拦截"，因此可以对外界的访问进行过滤和改写...
+        <hr />
+        Proxy 支持的拦截操作：
+        <ul>
+            <li>get(target, propKey, receiver) 拦截对象属性的读取</li>
+            <li>set(target, propKey, value, receiver) 拦截对象属性的设置</li>
+            <li>
+                has(target, propKey) 拦截 propKey in proxy
+                的操作，返回一个布尔值
+            </li>
+            <li>
+                deleteProperty(target, propKey) 拦截delete
+                proxy[propKey]的操作，返回一个布尔值
+            </li>
+            <li>
+                ownKeys(target) 拦截
+                Object.getOwnPropertyNames(proxy)、Object.getOwnPropertySymbols(proxy)、Object.keys(proxy)、for...in
+                循环，返回目标对象所有自身的属性的属性名
+            </li>
+            <li>
+                getOwnPropertyDescriptor(target, propKey) 拦截
+                Object.getOwnPropertyDescriptor(proxy,
+                propKey)，返回属性的描述对象
+            </li>
+            <li>
+                defineProperty(target, propKey, propDesc) 拦截
+                Object.defineProperty(proxy, propKey,
+                propDesc）、Object.defineProperties(proxy,
+                propDescs)，返回一个布尔值
+            </li>
+            <li>
+                preventExtensions(target) 拦截
+                Object.preventExtensions(proxy)，返回一个布尔值
+            </li>
+            <li>
+                getPrototypeOf(target) 拦截
+                Object.getPrototypeOf(proxy)，返回一个对象
+            </li>
+            <li>
+                isExtensible(target) 拦截
+                Object.isExtensible(proxy)，返回一个布尔值
+            </li>
+            <li>
+                setPrototypeOf(target, proto) 拦截 Object.setPrototypeOf(proxy,
+                proto)，返回一个布尔值；如果目标对象是函数，那么还有两种额外操作可以拦截：
+                <ul>
+                    <li>
+                        apply(target, object, args) 拦截 Proxy
+                        实例作为函数调用的操作，比如
+                        proxy(...args)、proxy.call(object,
+                        ...args)、proxy.apply(...)
+                    </li>
+                    <li>
+                        construct(target, args) 拦截 Proxy
+                        实例作为构造函数调用的操作，比如 new proxy(...args)
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </body>
+    <script>
+        // new Proxy("所要拦截的目标对象","定制拦截行为的对象")...
+        var proxy = new Proxy(
+            {},
+            {
+                get(target, property) {
+                    return 35;
+                }
+            }
+        );
+        console.log(proxy);
+        console.log(proxy.time); // 35
+        console.log(proxy.name); // 35
+        console.log(proxy.age); // 35
+        // 要使得 Proxy 起作用，必须针对 Proxy 实例进行操作，而不是针对目标对象（上例是空对象）进行操作...
+        var [target, handler] = [
+            {},
+            {
+                get(target, property) {
+                    return true;
+                }
+            }
+        ];
+        var daili = new Proxy(target, handler); // 没有设置拦截效果...
+        daili.a = "b";
+        console.log(target); // {a: "b"}
+        // 将 Proxy 对象设置到 object.proxy 属性上...
+        var objs = {
+            proxy: new Proxy(target, handler)
+        };
+        console.log(objs);
+        console.log(objs.name); // undefined
+        // 将 Proxy 实例作为其他对象的原型对象...
+        var prx = new Proxy(
+            {},
+            {
+                get(target, property) {
+                    return false;
+                }
+            }
+        );
+        let objc = Object.create(prx);
+        // Proxy 对象是 objc 的原型，objc 本身并没有 name 属性，根据原型链，会在 Proxy 对象上读取该属性，导致被拦截...
+        console.log(objc);
+        console.log(objc.name); // false
+        var example = new Proxy(
+            function([x, y] = [0, 0]) {
+                return x + y;
+            },
+            {
+                get(target, name) {
+                    if (name == "prototype") {
+                        return target.prototype;
+                    }
+                    return "HELLO " + name.toUpperCase();
+                },
+                apply(target, thisBinding, args) {
+                    return String(args[0]) + String(args[1]);
+                },
+                construct(target, args) {
+                    return {
+                        value: args[1]
+                    };
+                }
+            }
+        );
+        console.log(example); // ƒ anonymous()
+        console.log(example(1, 2)); // 12
+        console.log(new example(1, 2, 3)); // {value: 2}
+        console.log(example.taste); // HELLO TASTE
+        let validator = {
+            set(obj, prop, value) {
+                if (prop == "age") {
+                    if (!Number.isInteger(value)) {
+                        throw new Error("The age is not an integer");
+                    }
+                    if (value > 200) {
+                        throw new Error("The age seems invalid");
+                    }
+                }
+                obj[prop] = value;
+            }
+        };
+        let person = new Proxy({}, validator);
+        try {
+            person.age = "teenager";
+        } catch (error) {
+            console.log(error);
+        } finally {
+            person.age = 100;
+            console.log(person);
+        }
+        var fncs = function() {
+            return "fncs";
+        };
+        var deal = {
+            apply() {
+                return "not fncs";
+            }
+        };
+        var pipi = new Proxy(fncs, deal);
+        console.log(fncs()); // fncs
+        console.log(pipi()); // not fncs
+        function sum(x, y) {
+            return x + y;
+        }
+        var double = {
+            apply(target, ctx, args) {
+                // ctx --- this 的指向...
+                console.log(target, ctx, args); // sum、undefined、[1, 2]
+                return Reflect.apply(...arguments) * 2;
+            }
+        };
+        var app = new Proxy(sum, double);
+        console.log(app(1, 2)); // 6
+        console.log(app.call(null, 1, 2));
+    </script>
+</html>

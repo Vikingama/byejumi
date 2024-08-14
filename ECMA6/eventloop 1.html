@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>event loop 1</title>
+    </head>
+
+    <body>
+        单线程的 Node.js 能够实现无阻塞 IO（输入/输出）的原因就是事件循环...
+        <hr />
+        大多数系统内核是多线程的，它们在后台执行多个操作，当这些操作完成时，内核就会通知
+        Node.js，而这些操作的回调函数被添加到事件轮询列表，并且 Node.js
+        会在适当的时机执行回调函数...
+        <hr />
+        当 Node.js 开始执行时，便初始化 Event
+        Loop，执行过程中会存在许多异步操作（定时器、调用异步
+        API（请求，事件监听）...），在主进程代码执行完后，便开始运行 Event
+        Loop...
+        <hr />
+        <xmp></xmp>
+        <hr />
+        timers --- setTimeout 和 setInterval
+        都要指定一个运行时间，这个运行时间其实不是确切的运行时间，而是一个期望时间，Event
+        Loop 会在 timers
+        阶段执行超过期望时间的定时器回调函数，由于不确定在其他阶段甚至主进程中的事件执行时间，所以定时器不一定会按时执行...
+        <hr />
+        I/O callbacks --- 主要执行一些系统操作带来的回调函数，如 TCP 错误，如果
+        TCP 尝试链接时出现 ECONNREFUSED 错误，这个错误报告会先进入队列中，然后在
+        I/O callbacks 阶段执行...
+        <hr />
+        poll ---
+        也会执行时间定时器到达期望时间的回调函数；执行事件循环列表里的函数...
+        <ul>
+            当 Event Loop 进入 poll 阶段并且没有其余的定时器：
+            <li>如果事件循环列表不为空，则迭代同步的执行队列中的函数...</li>
+            <li>
+                如果事件循环列表为空，则判断是否有 setImmediate 函数待执行...
+            </li>
+            <li>
+                如果有结束 poll 阶段，直接到 check
+                阶段，如果没有，则等待回调函数进入队列并立即执行...
+            </li>
+        </ul>
+        <hr />
+        check --- 在 poll 阶段结束之后，执行 setImmediate...
+        <hr />
+        close --- 突然结束的事件的回调函数会在这里触发，如果
+        socket.destroy，那么 close 会被触发在这个阶段，也有可能通过
+        process.nextTick 来触发...
+        <hr />
+        setImmediate()、setTimeout()、process.nextTick()...
+        <hr />
+        process.nextTick() 是在下次事件循环之前运行，如果把 process.nextTick()
+        和 setImmediate() 写在一起，那么是 process.nextTick() 先执行；next 比
+        immediate 快，因为历史存留没办法解决...
+    </body>
+    <script>
+        document.querySelector("xmp").innerHTML = `
+   ┌───────────────────────┐
+┌─>│        timers         │ 这个阶段执行 setTimeout 和 setInterval 中的回调函数
+│  └──────────┬────────────┘
+│  ┌──────────┴────────────┐
+│  │     I/O callbacks     │ 这个阶段执行除了 close 回调函数以外的几乎所有的 I/0 回调函数
+│  └──────────┬────────────┘
+│  ┌──────────┴────────────┐
+│  │     idle, prepare     │ 这个阶段仅仅 Node.js 内部使用
+│  └──────────┬────────────┘      ┌───────────────┐
+│  ┌──────────┴────────────┐      │   incoming:   │
+│  │         poll          │<─────┤  connections, │ 执行队列中的回调函数、检索新的回调函数
+│  └──────────┬────────────┘      │   data, etc.  │
+│  ┌──────────┴────────────┐      └───────────────┘
+│  │        check          │ setImmediate 将在这里被调用
+│  └──────────┬────────────┘
+│  ┌──────────┴────────────┐
+└──┤    close callbacks    │ close 回调函数被调用如：socket.on('close', ...)
+   └───────────────────────┘
+`;
+        const now = Date.now();
+        setTimeout(() => {
+            const rightNow = Date.now() - now;
+            console.log(`${rightNow}ms 之后被执行...`); // rightNow 几乎不会为 100...
+        }, 100);
+    </script>
+</html>

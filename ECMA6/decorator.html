@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>decorator</title>
+    </head>
+
+    <body></body>
+    <script>
+        /*
+        修饰器是一个对类进行处理的函数。修饰器函数的第一个参数，就是所要修饰的目标类...
+        修饰器对类的行为的改变，是代码编译时发生的，而不是在运行时。修饰器能在编译阶段运行代码...
+        修饰器本质就是编译时执行的函数...
+        */
+        @testable
+        class TestClass {}
+        function testable(target) {
+            target.isTestable = true;
+        }
+        console.log(TestClass.isTestable);
+    </script>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Symbol</title>
+</head>
+
+<body>
+    Symbol --- ES6 新引入的原始（基础）数据类型（undefined、null、Boolean、String、Number、Object），表示独一无二的值...
+</body>
+<script>
+    let s = Symbol(); // 不能使用 new 命令，Symbol 是一个原始类型的值，不是对象...
+    console.log(typeof s);
+    console.log(s instanceof Symbol); // false
+    let symz = Symbol("foo");
+    console.log(symz); // Symbol(foo)
+    console.log(symz.toString()); // "Symbol(foo)"
+    let objz = {
+        toString() {
+            return "FIRE";
+        }
+    }
+    let wow = Symbol(objz);
+    console.log(wow.toString()); // Symbol(FIRE)
+    console.log(Symbol("LOL") == Symbol("LOL")); // false
+    try {
+        let sns = Symbol("SNS");
+        console.log(`sns 是 ${sns} 的小写...`);
+    } catch (error) {
+        // TypeError: Cannot convert a Symbol value to a string...
+        console.log("Symbol 不能与其他类型的值进行运算...");
+    }
+    console.log(Boolean(Symbol())); // true
+    console.log(Boolean(Symbol(true))); // true
+    console.log(Boolean(Symbol(false))); // true
+    let keys = Symbol(),
+        mains = Symbol();
+    let a = {};
+    a[keys] = "HI...";
+    let b = {
+        // 在对象的内部，使用 Symbol 值定义属性时，Symbol 值必须放在方括号之中...
+        [keys]: "HI...",
+        mains: "hahasha", // mains 会被解析成字符串...
+        [mains]: Symbol("vvs")
+    };
+    let c = {};
+    Object.defineProperty(c, keys, {
+        value: "HI..."
+    });
+    console.log(a[keys]); // HI...
+    console.log(b[keys]); // HI...
+    console.log(b.mains); // hahasha
+    console.log(b[mains]); // undefined
+    console.log(b["mains"]); // hahasha
+    console.log(c[keys]); // HI...
+    // Symbol 作为对象属性名时，不能用点运算符...
+    let d = {};
+    d.keys = "Hello...";
+    console.log(d[keys]); // undefined
+    console.log(d["keys"]); // Hello...
+    // Symbol 作为属性名，不会出现在 for...in、for...of 循环中...
+    for (var item in b) {
+        console.log(item); // mains...
+    }
+    // Symbol 作为属性名，不会出现在 Object.keys()、Object.getOwnPropertyNames()、JSON.stringify() 循环中...
+    console.log(Object.keys(b)); // ["mains"]
+    console.log(Object.getOwnPropertySymbols(b)); // [Symbol(), Symbol()]
+    console.log(Reflect.ownKeys(b)); // ["mains", Symbol(), Symbol()]
+    console.log(Symbol.for("ora") === Symbol.for("ora")); // true
+    let kf1 = Symbol.for("kf1"),
+        kf2 = Symbol("kf2");
+    console.log(Symbol.keyFor(kf1)); // kf1
+    console.log(Symbol.keyFor(kf2)); // undefined
+</script>
+
+</html>

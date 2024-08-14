@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>Zhuan Pan 3X3</title>
+        <style>
+            div {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                outline: 1px solid black;
+                user-select: none;
+            }
+            #container {
+                margin: auto;
+                width: 300px;
+                height: 300px;
+                outline: 3px solid black;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="container"></div>
+    </body>
+    <script>
+        function zhuanPan(container) {
+            if (!container) {
+                return;
+            }
+            if (!new.target || new.target != zhuanPan) {
+                // 在构造函数中，指向被 new 调用的构造函数...
+                return new zhuanPan(container);
+            }
+            // 转盘容器
+            this.container = container;
+            // lineNum -> 行数/列数
+            this.lineNum = 3;
+            // sumBlock -> 总的格子数 n 的平方减去 n-2 的平方
+            this.sumBlock = 4 * this.lineNum - 4;
+            // 格子列表
+            this.blockList = null;
+            // circle -> 每次转的圈数（大于等于一）
+            this.circle = 2;
+            // 开始按钮能否点击，默认不能点
+            this.clickable = false;
+            // 计时器
+            this.interval = null;
+            // 选中框当前位置，起始位置为一，根据上一个结果位置进行修改
+            this.curPos = 1;
+            // answer -> 目标（第 answer 个格子）,当前例子为 3X3，故 answer 介于 [1, 8]...
+            this.answer = 1;
+            // 到达结果位置所需要的步数
+            this.step = 1;
+            // 初始化
+            this.init();
+        }
+        zhuanPan.prototype.init = function() {
+            // 准备 DOM 元素
+            this.domReady();
+            // 绑定事件，点击开始后向后台发起请求，获取 answer...
+            this.bindEvent();
+        };
+        zhuanPan.prototype.domReady = function() {
+            const style = document.createElement("style");
+            style.innerHTML = `
+            #zhuanPan {
+                position: relative;
+                margin: auto;
+                width: 100%;
+                height: 100%;
+            }
+            #zhuanPan .button {
+                position: absolute;
+                top: 0;
+                right: 0;
+                left: 0;
+                bottom: 0;
+                margin: auto;
+                width: ${100 - (100 / this.lineNum) * 2}%;
+                height: ${100 - (100 / this.lineNum) * 2}%;
+            }
+            #zhuanPan .block {
+                position: absolute;
+                width: ${100 / this.lineNum}%;
+                height: ${100 / this.lineNum}%;
+            }
+            #zhuanPan .current {
+                outline: 3px solid orange;
+                z-index: 1;
+            }
+            `;
+            document.head.appendChild(style);
+            this.container.innerHTML = `
+            <div id="zhuanPan">
+                <div class="button">
+                    开始
+                </div>
+                <div
+                    class="block current"
+                    style="top: 0;left: 0;"
+                >
+                    1
+                </div>
+                <div
+                    class="block"
+                    style="top: 0;left: ${100 / this.lineNum}%;"
+                >
+                    2
+                </div>
+                <div
+                    class="block"
+                    style="top: 0;right: 0;"
+                >
+                    3
+                </div>
+                <div
+                    class="block"
+                    style="top: ${100 / this.lineNum}%;right: 0;"
+                >
+                    4
+                </div>
+                <div
+                    class="block"
+                    style="bottom: 0;right: 0;"
+                >
+                    5
+                </div>
+                <div
+                    class="block"
+                    style="bottom: 0;left: ${100 / this.lineNum}%;"
+                >
+                    6
+                </div>
+                <div
+                    class="block"
+                    style="bottom: 0;left: 0;"
+                >
+                    7
+                </div>
+                <div
+                    class="block"
+                    style="top: ${100 / this.lineNum}%;left: 0;"
+                >
+                    8
+                </div>
+            </div>
+            `;
+            this.blockList = document.querySelectorAll(".block");
+            this.clickable = true;
+        };
+        zhuanPan.prototype.bindEvent = function() {
+            document.querySelector(".button").addEventListener(
+                "click",
+                () => {
+                    if (this.clickable) {
+                        this.clickable = false;
+                        // 取得答案/请求答案接口
+                        this.answer = Math.floor(Math.random() * 8 + 1);
+                        if (this.interval) {
+                            clearInterval(this.interval);
+                        }
+                        // 取得要跳跃的步数
+                        if (this.answer >= this.curPos) {
+                            this.step =
+                                this.sumBlock * this.circle +
+                                this.answer -
+                                this.curPos;
+                        } else {
+                            this.step =
+                                this.sumBlock * (this.circle + 1) +
+                                this.answer -
+                                this.curPos;
+                        }
+                        this.main();
+                    }
+                },
+                false
+            );
+        };
+        zhuanPan.prototype.main = function() {
+            this.interval = setInterval(() => {
+                if (this.step != 0) {
+                    this.step--;
+                    this.curPos++;
+                    this.blockList.forEach(item => {
+                        item.classList.remove("current");
+                    });
+                    if (this.curPos <= 8) {
+                        this.blockList[this.curPos - 1].classList.add(
+                            "current"
+                        );
+                    } else if (this.curPos > 8 && this.curPos <= 16) {
+                        this.blockList[this.curPos - 8 - 1].classList.add(
+                            "current"
+                        );
+                    } else if (this.curPos > 16 && this.curPos <= 24) {
+                        this.blockList[this.curPos - 16 - 1].classList.add(
+                            "current"
+                        );
+                    } else {
+                        this.blockList[this.curPos - 24 - 1].classList.add(
+                            "current"
+                        );
+                    }
+                } else {
+                    this.popAnswer();
+                }
+            }, 100);
+        };
+        zhuanPan.prototype.popAnswer = function() {
+            this.clickable = true;
+            this.curPos = this.answer;
+            clearInterval(this.interval);
+            alert(`已经跳转到了第 ${this.curPos} 个格子`);
+        };
+        new zhuanPan(document.querySelector("#container"));
+    </script>
+</html>

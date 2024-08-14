@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>before module</title>
+    </head>
+
+    <body></body>
+    <script>
+        // 标准模式
+        var sample = (function() {
+            var api = "g1d4s564gb4";
+            var m1 = function() {
+                console.log(this);
+            };
+            var m2 = () => {
+                console.log(this);
+            };
+            return {
+                m1: m1,
+                m2: m2
+            };
+        })();
+        sample.m1(); // 指向 sample 的 return
+        sample.m2(); // 指向 window
+        var arr = [1, 2, 3];
+        sample.m1.apply(arr); // 指向 arr
+        sample.m2.call(arr); // 指向 window
+        // 放大模式
+        var sample = (function(modules) {
+            modules.m3 = function() {
+                console.log("bingos");
+            };
+            return modules;
+        })(sample);
+        // 为 sample 添加了一个方法 m3...
+        console.log(sample);
+        sample.m3();
+        // 宽放大模式
+        var sample = (function(modules) {
+            modules.m4 = function() {
+                console.log("gooses");
+            };
+            return modules;
+        })(sample || {});
+        console.log(sample);
+        sample.m4();
+        // 输入全局变量
+        var jQuery = 1,
+            yaHoo = 2;
+        var oops = (function($, y) {
+            console.log($);
+            console.log(y);
+        })(jQuery, yaHoo);
+        /*
+        CommonJS --- 同步加载
+            一个文件就是一个模块、每个模块都是一个单独的作用域；
+            在一个文件中定义的变量、函数和类都是私有的...
+            var b = require("./resource/a.js"); --- a.js 加载完之后才会执行后边的操作...
+        AMD --- 异步加载（提前加载、依赖前置）
+        CMD --- 异步加载（延迟加载、依赖就近）
+            define(function (require, exports, module){
+                // 依赖就近...
+                var b = require("./resource/a.js");
+                b.mix();
+            })
+        UMD --- 立即执行函数
+            (function (context, definition){
+                context --- 运行环境
+                definition --- 模块定义体
+            }(this, function(){
+
+            }))
+        */
+        var event = document.createEvent("Event");
+        event.initEvent("begin", true, true);
+
+        function f1() {
+            console.log("f1 begin...");
+            setTimeout(function() {
+                // 异步变成 ---> 回调函数
+                f3();
+            }, 3000);
+        }
+        document.addEventListener(
+            "begin",
+            function() {
+                f2();
+            },
+            false
+        );
+
+        function f2() {
+            console.log("f2 begin...");
+        }
+
+        function f3() {
+            console.log("f3 begin...");
+            setTimeout(function() {
+                // 异步编程 ---> 事件触发
+                document.dispatchEvent(event);
+            }, 3000);
+        }
+        f1();
+    </script>
+</html>

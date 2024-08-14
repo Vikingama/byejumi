@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>generator async</title>
+    </head>
+
+    <body>
+        ES6 之前的异步编程：回调函数、事件监听、发布/订阅、Promise 对象...
+        <hr />
+        异步：任务被人为分成两段，先执行第一段，然后转而执行其他任务，等做好了准备，再回过头执行第二段...
+        <hr />
+        回调函数：把任务的第二段单独写在一个函数里面，等到重新执行这个任务的时候，就直接调用这个函数...
+        <hr />
+        回调多层嵌套容易出现"回调地狱"情况 ==> Promise 解决了"回调地狱" ==>
+        Promise 代码冗余...
+        <hr />
+        协程：多个线程互相协作，完成异步任务，在 ES6 中依靠 Generator
+        函数实现协程...
+        <ul>
+            <li>协程 A 开始执行...</li>
+            <li>协程 A 执行到一半，进入暂停，执行权转移到协程 B...</li>
+            <li>一段时间后，协程 B 交还执行权...</li>
+            <li>协程 A 恢复执行...</li>
+        </ul>
+        <hr />
+        Thunk 函数：单参数函数，只接受回调函数作为参数...
+    </body>
+    <script>
+        function* sam(x) {
+            var y = yield x + 2;
+            return y;
+        }
+        // 调用 Generator 函数，会返回一个内部指针/遍历器 s...
+        var s = sam(1);
+        // 调用指针 s 的 next 方法，会移动内部指针，指向第一个遇到的 yield 语句...
+        console.log(s.next()); // { value: 3, done: false }
+        // done 是一个布尔值，表示 Generator 函数是否执行完毕...
+        console.log(s.next()); // { value: undefined, done: true }
+        // 传值调用（JS 使用的这种...） vs 传名调用
+        var x = 1;
+
+        function double(m) {
+            return m * 2;
+        }
+        // 传值调用 <===> double(6); 传名调用 <===> (x + 5) * 2
+        double(x + 5);
+        // 传值调用比较简单，但对参数求值时，容易造成性能损失...
+        function riri(a, b) {
+            return b;
+        }
+        // 第一个参数在函数体内没有用到，传值调用，会造成不必要的性能损失...
+        riri(3 * x * x - 2 * x - 1, x);
+        // Thunk 函数...
+        var t1 = function(fn) {
+            return function() {
+                var args = Array.prototype.slice.call(arguments);
+                return function(callback) {
+                    args.push(callback);
+                    return fn.apply(this, args);
+                };
+            };
+        };
+        // t1(doFn)(a,b,c)(callback);
+        const t2 = fn => {
+            return function(...args) {
+                return function(callback) {
+                    return fn.call(this, ...args, callback);
+                };
+            };
+        };
+        // t2(doFn)(a,b,c)(callback);
+        function sms(a, b) {
+            b(a);
+        }
+        const p2p = t2(sms);
+        p2p(2333)(console.log);
+    </script>
+</html>

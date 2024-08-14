@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>Full Page</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                transition: all 0.3s;
+            }
+            div {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 100%;
+                height: 100vh;
+                background: black;
+                color: white;
+                font-size: 30vh;
+            }
+        </style>
+    </head>
+    <body>
+        <div>1</div>
+        <div>2</div>
+        <div>3</div>
+        <div>4</div>
+        <div>5</div>
+    </body>
+    <script>
+        let rootEle = document.documentElement || document.body,
+            perHeight = rootEle.clientHeight;
+        window.addEventListener("resize", function() {
+            perHeight = rootEle.clientHeight;
+        });
+        window.addEventListener(
+            "wheel",
+            function(e) {
+                if (e.deltaY < 0) {
+                    // console.log("滚动条向顶部滚");
+                    rootEle.scrollTop -= perHeight;
+                } else {
+                    // console.log("滚动条向底部滚");
+                    rootEle.scrollTop += perHeight;
+                }
+                e.preventDefault();
+            },
+            false
+        );
+    </script>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>destructuring</title>
+    </head>
+
+    <body>
+        解构的用途：
+        <ul>
+            <li>交换变量的值</li>
+            <li>从函数返回多个值</li>
+            <li>函数参数的定义</li>
+            <li>提取 JSON 数据</li>
+            <li>函数参数的默认值</li>
+            <li>遍历 Map 结构</li>
+            <li>
+                输入模块的指定方法 <br />==> <br />const { SourceMapConsumer,
+                SourceNode } = require("source-map");
+            </li>
+        </ul>
+    </body>
+    <script>
+        var [a, , c] = [1, 2, 3];
+        console.log(a); // 1
+        console.log(c); // 3
+        let [x, ...y] = [1, 2, 3, 4, 5];
+        console.log(y); // [2, 3, 4, 5]
+        // 如果解构不成功，变量的值就等于 undefined...
+        let [m, n, p, ...q] = [7, 8];
+        console.log(p); // undefined
+        console.log(q); // []
+        try {
+            let [pi] = 0;
+        } catch (error) {
+            console.log(error); // TypeError: 0 is not iterable (迭代器)
+        }
+        let [v, ...w] = new Set([1, 2, 3]);
+        console.log(w); // [2, 3]
+        function* fibs() {
+            let a = 0;
+            let b = 1;
+            while (true) {
+                yield a;
+                [a, b] = [b, a + b];
+            }
+        }
+        let [e, r, t] = fibs();
+        console.log(e); // 0
+        console.log(r); // 1
+        console.log(t); // 1
+        let [d = true, b = false] = [false];
+        console.log(d, b); // false false
+        // 函数只有一个返回值，利用结构可以方便从返回值中取出多个值...
+        function ga() {
+            return [1, 2, 3];
+        }
+        let [qw, ...we] = ga();
+        console.log(we); // [2, 3]
+        function co() {
+            console.log("zxc");
+        }
+        let [zxc = co()] = [];
+        console.log(zxc); // 会调用函数，并输出 undefined...
+        let { bar, foo, barz, fooz: arr } = {
+            foo: "foo",
+            bar: "bar",
+            fooz: [4, 5, 6]
+        };
+        console.log(foo); // foo
+        console.log(barz); // undefined
+        console.log(arr); // [4, 5, 6]
+        var { xx = 10, yy, zz = 30 } = {
+            yy: 20,
+            zz: undefined
+        };
+        console.log(xx); // 10
+        console.log(yy); // 20
+        console.log(zz); // 30
+        try {
+            let ccc;
+            ({ ccc } = {
+                ccc: 456
+            });
+            console.log(ccc);
+        } catch (error) {
+            console.log(error);
+        }
+        // 可以将对象的方法赋给变量...
+        let { log, sin, cos } = Math;
+        console.log(log(Math.E)); // 1
+        console.log(sin);
+        console.log(cos);
+        try {
+            let { ppp: qqq } = undefined;
+            console.log(qqq);
+        } catch (error) {
+            // TypeError: Cannot destructure property `ppp` of 'undefined' or 'null'...
+            console.log(error);
+        } finally {
+            let { toString: s } = 123;
+            // 会先将 123 转换为 Number(123)...
+            console.log(s === Number.prototype.toString); // true
+            let num = 789;
+            console.log(typeof s.call(num));
+        }
+        console.log([[3, 2], [2, 1]].map(([a, b]) => a + b)); // [5, 3]
+        var arc = (function([x, y]) {
+            return x + y;
+        })([1, 2]);
+        console.log(arc);
+        // 利用解构赋值 ==> 设置函数默认值
+        function move({ x = 0, y = 0 } = {}) {
+            return [x, y];
+        }
+        console.log(move()); // [0, 0]
+        console.log(move({})); // [0, 0]
+        console.log(
+            move({
+                x: 3,
+                y: 3
+            })
+        ); // [3, 3]
+        // 交换变量的值
+        let xxx = "x",
+            yyy = "y";
+        [xxx, yyy] = [yyy, xxx];
+        console.log(xxx, yyy); // y x
+        const maps = new Map();
+        maps.set("one", "love");
+        maps.set("two", "you");
+        for (const [key, value] of maps) {
+            console.log(key + " is " + value);
+        }
+    </script>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>puzzle</title>
+    </head>
+
+    <body>
+        <h3>语句优先</h3>
+        当 {}
+        既可以被理解为"复合语句块"也可以被理解为"对象直接量"或"函数声明"的时候，JavaScript
+        将会将其理解成为复合语句块...
+        <hr />
+        []+[] => ""
+        <hr />
+        {}+{} => "[object Object][object Object]"
+        <hr />
+        []+{} => "[object Object]"
+        <hr />
+        {}+[] => {};+[] => 0
+        <hr />
+        console.log({}+[]) => 括号中的语句被当作表达式，{} 不能被理解为语句块 =>
+        console.log("[object Object]"+"") => [object Object]
+    </body>
+    <script>
+        (function() {
+            var a = (b = "ab");
+        })();
+        try {
+            console.log(a);
+        } catch (error) {
+            console.log(error); // ReferenceError: a is not defined
+        } finally {
+            console.log(b); // ab ---> b 变成了全局变量...
+        }
+        if (!(c in window)) {
+            var c = "c"; // 没有执行，因为变量声明被提前
+        }
+        console.log(c); // undefined
+        // 函数表达式的函数名称只对函数内部可见...
+        var outer = function inner() {
+            console.log("inner");
+            inner(); // 不报错
+        };
+        // inner(); Uncaught ReferenceError: inner is not defined
+        function foo(x) {
+            console.log(x); // 不运行
+        }
+        0;
+        // &&, ||, !, +, -, ~ 等操作符（逗号），在函数表达式和函数声明上消除歧义...
+        true &&
+            (function(x) {
+                console.log(x); // 可以运行
+            })(1);
+        var o0o = (function(x) {
+            console.log(x); // 可以运行
+        })(2);
+        var oOo = (function bar(x) {
+            console.log(x); // 可以运行
+        })(3);
+    </script>
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>360 Viewer</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+            }
+            .main {
+                margin: 30px auto;
+                width: 480px;
+            }
+            .control {
+                width: 100%;
+                cursor: ew-resize;
+            }
+            .viewer {
+                width: 100%;
+                height: 180px;
+                background-image: url("./resource/360.jpg");
+                background-position-y: 0;
+                background-repeat: no-repeat;
+                background-size: 100%;
+                overflow: hidden;
+            }
+            .control[value="1"] + .viewer {
+                background-position-y: 0;
+            }
+            .control[value="2"] + .viewer {
+                background-position-y: -180px;
+            }
+            .control[value="3"] + .viewer {
+                background-position-y: -360px;
+            }
+            .control[value="4"] + .viewer {
+                background-position-y: -540px;
+            }
+            .control[value="5"] + .viewer {
+                background-position-y: -720px;
+            }
+            .control[value="6"] + .viewer {
+                background-position-y: -900px;
+            }
+            .control[value="7"] + .viewer {
+                background-position-y: -1080px;
+            }
+            .control[value="8"] + .viewer {
+                background-position-y: -1260px;
+            }
+            .control[value="9"] + .viewer {
+                background-position-y: -1440px;
+            }
+            .control[value="10"] + .viewer {
+                background-position-y: -1620px;
+            }
+            .control[value="11"] + .viewer {
+                background-position-y: -1800px;
+            }
+            .control[value="12"] + .viewer {
+                background-position-y: -1980px;
+            }
+            .control[value="13"] + .viewer {
+                background-position-y: -2160px;
+            }
+            .control[value="14"] + .viewer {
+                background-position-y: -2340px;
+            }
+            .control[value="15"] + .viewer {
+                background-position-y: -2520px;
+            }
+            .control[value="16"] + .viewer {
+                background-position-y: -2700px;
+            }
+            .control[value="17"] + .viewer {
+                background-position-y: -2880px;
+            }
+            .control[value="18"] + .viewer {
+                background-position-y: -3060px;
+            }
+            .control[value="19"] + .viewer {
+                background-position-y: -3240px;
+            }
+            .control[value="20"] + .viewer {
+                background-position-y: -3420px;
+            }
+            .control[value="21"] + .viewer {
+                background-position-y: -3600px;
+            }
+            .control[value="22"] + .viewer {
+                background-position-y: -3780px;
+            }
+            .control[value="23"] + .viewer {
+                background-position-y: -3960px;
+            }
+            .control[value="24"] + .viewer {
+                background-position-y: -4140px;
+            }
+            .control[value="25"] + .viewer {
+                background-position-y: -4320px;
+            }
+            .control[value="26"] + .viewer {
+                background-position-y: -4500px;
+            }
+            .control[value="27"] + .viewer {
+                background-position-y: -4680px;
+            }
+            .control[value="28"] + .viewer {
+                background-position-y: -4860px;
+            }
+            .control[value="29"] + .viewer {
+                background-position-y: -5040px;
+            }
+            .control[value="30"] + .viewer {
+                background-position-y: -5220px;
+            }
+            .control[value="31"] + .viewer {
+                background-position-y: -5400px;
+            }
+            .control[value="32"] + .viewer {
+                background-position-y: -5580px;
+            }
+            .control[value="33"] + .viewer {
+                background-position-y: -5760px;
+            }
+            .control[value="34"] + .viewer {
+                background-position-y: -5940px;
+            }
+            .control[value="35"] + .viewer {
+                background-position-y: -6120px;
+            }
+            .control[value="36"] + .viewer {
+                background-position-y: -6300px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="main">
+            <input
+                type="range"
+                class="control"
+                min="1"
+                max="36"
+                value="1"
+                oninput="this.setAttribute('value', this.value)"
+            />
+            <div class="viewer"></div>
+        </div>
+    </body>
+</html>

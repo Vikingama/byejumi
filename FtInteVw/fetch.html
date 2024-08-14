@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>AJAX</title>
+    </head>
+
+    <body>
+        <xmp></xmp>
+        <xmp></xmp>
+        <xmp></xmp>
+    </body>
+    <script>
+        document.getElementsByTagName("xmp")[0].innerHTML = `
+    new XMLHttpRequest()
+        // 事件
+        onabort: 在调用 abort 方法而终止连接时触发
+        onerror: 在请求发生错误时触发
+        onload: 在接收到完整的响应数据时触发
+        onloadend: 在通信完成或者触发 error、abort 或 load 事件后触发
+        onloadstart: 在接收到响应数据的第一个字节时触发
+        onprogress: 在接收响应期间持续不断地触发
+        onreadystatechange: 当 readyState 属性发生变化时调用
+        ontimeout: 在超时发生时触发
+        // 属性
+        readyState: 请求状态码 -> 0 代理被创建、1 open 方法已经被调用、2 send 方法已经被调用，并且头部和状态已经可获得、3 responseText 属性已经包含部分数据、4 下载操作已完成...
+        response: 返回 ArrayBuffer、Blob、Document、DOMString ，具体取决于 XMLHttpRequest.responseType...
+        responseText: 返回一个 DOMString，如果请求未成功或尚未发送，则返回 null...
+        responseType: 默认 text，arraybuffer、blob、document、json...
+        responseURL: 返回响应的序列化 URL，如果 URL 为空，则返回空字符串...
+        responseXML: 返回一个 Document，其中包含该请求的响应，如果请求未成功、尚未发送或不能解析为 XML 或 HTML，则返回 null...
+        status: 响应状态码
+        statusText: 返回一个 DOMString，与 XMLHTTPRequest.status 不同的是，它包括响应状态的整个文本...
+        timeout: 最大请求时间（毫秒），超过该时间请求会自动结束...
+        upload: 上传过程
+        withCredentials: 是否该使用类似头部授权或者 TLS 客户端证书这一类资格证书来创建一个跨站点访问控制 cross-site Access-Control 请求...
+        // 方法
+        abort() 立刻中止请求...
+        getAllResponseHeaders() 以字符串的形式返回所有用 CRLF 分隔的响应头，如果没有收到响应，则返回 null...
+        getResponseHeader() 返回包含指定响应头的字符串，如果响应尚未收到或响应中不存在该报头，则返回 null...
+        open() 初始化一个请求...
+        overrideMimeType() 重写由服务器返回的 MIME type...
+        send() 发送请求...
+        setRequestHeader() 设置HTTP请求头的值...
+    `;
+        document.getElementsByTagName("xmp")[1].innerHTML = `
+    new WebSocket()
+        binaryType: 连接所传输二进制数据的类型，DOMString、blob、arraybuffer...
+        bufferedAmount: 未发送至服务器的字节数
+        extensions: 服务器选择的扩展
+        onclose: 连接关闭后的回调函数
+        onerror: 连接失败后的回调函数
+        onmessage: 当从服务器接受到信息时的回调函数
+        onopen: 连接成功后的回调函数
+        protocol: 服务器选择的下属协议
+        readyState: 链接状态，0 正在链接、1 已经链接并且可以通讯、2 连接正在关闭、3 连接已关闭或者没有链接成功...
+        url: WebSocket 的绝对路径
+        send: 通过 WebSocket 链接传输至服务器的数据排入队列...
+        close: 关闭 WebSocket  连接或连接尝试...
+    `;
+        document.getElementsByTagName("xmp")[2].innerHTML = `
+    fetch(URL, {
+        method: GET|POST,
+        headers: 请求头,
+        body: 请求体,
+        mode: cors|no-cors|same-origin,
+        credentials: omit|same-origin|include,
+        cache: default|no-store|reload|no-cache|force-cache|only-if-cached,
+        redirect: follow|error|manual,
+        referrer: no-referrer|client|URL,
+        referrerPolicy: no-referrer|no-referrer-when-downgrade|origin|origin-when-cross-origin|unsafe-url,
+        integrity: 请求资源完整性
+    }).then(response => {
+        return response.json().then(data => {
+            if(response.ok){
+                return data;
+            } else {
+                return Promise.reject({
+                    status: response.status,
+                    data
+                })
+            }
+        })
+    }).catch (e){
+        console.error(e);
+    };
+    `;
+        export default function(url = "", data = {}, type = "GET") {
+            url = url || "https://www.baidu.com";
+            type = type.toUpperCase();
+            if (type === "GET") {
+                let paraStr = "";
+                Object.keys(data).forEach(key => {
+                    paraStr += key + "=" + data[key] + "&";
+                });
+                if (paraStr.length !== 0) {
+                    paraStr = paraStr.substr(0, paraStr.lastIndexOf("&"));
+                    url = url + "?" + paraStr;
+                }
+            }
+            if (window.fetch) {
+                let fetchConfig = {
+                    method: type,
+                    headers: {
+                        Accept: "application/json",
+                        "Content-Type": "application/json"
+                    },
+                    mode: "cors",
+                    credentials: "include",
+                    cache: "default"
+                };
+                if (type === "POST") {
+                    Object.defineProperty(fetchConfig, "body", {
+                        value: JSON.stringify(data)
+                    });
+                }
+                window.fetch(url, fetchConfig).then(response => {
+                    return response.json();
+                });
+            } else {
+                return new Promise((resolve, reject) => {
+                    let xhr, sendData;
+                    if (window.XMLHttpRequest) {
+                        xhr = new XMLHttpRequest();
+                    } else {
+                        xhr = new ActiveXObject();
+                    }
+                    if (type === "POST") {
+                        sendData = JSON.stringify(data);
+                    }
+                    xhr.open(type, url, true);
+                    xhr.setRequestHeader(
+                        "Content-type",
+                        "application/x-www-form-urlencoded"
+                    );
+                    xhr.send(sendDate);
+                    xhr.onreadystatechange = () => {
+                        if (xhr.readyState == 4) {
+                            if (xhr.status == 200) {
+                                resolve(JSON.parse(xhr.response));
+                            } else {
+                                reject(xhr);
+                            }
+                        }
+                    };
+                });
+            }
+        }
+    </script>
+</html>

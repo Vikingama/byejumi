@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>set & map</title>
+    </head>
+
+    <body>
+        Set --- ES6
+        提供的新的数据结构，类似于数组，成员的值都是唯一的，没有重复的值...
+        <hr />
+        Map ---
+        类似于对象，键值对的集合，但是“键”的范围不限于字符串，各种类型的值（包括对象）都可以当作键...
+        <hr />
+        Object(字符串 - 值) || Map(值 - 值)
+    </body>
+    <script>
+        const sets = new Set(),
+            arrs = [1, 5, 9, 7, 5, 3, 8, 5, 2, 4, 5, 6];
+        arrs.forEach(item => sets.add(item));
+        console.log(sets);
+        console.log(sets.size); // 9
+        console.log(new Set([1, 2, 3])); // Set(3) {1, 2, 3}
+        // 数组去重
+        console.log([...new Set(arrs)]); // [1, 5, 9, 7, 3, 8, 2, 4, 6]
+        console.log(Array.from(new Set(arrs))); // [1, 5, 9, 7, 3, 8, 2, 4, 6]
+        let ops = new Set();
+        ops.add(NaN);
+        ops.add({});
+        ops.add(NaN);
+        ops.add({});
+        console.log(ops); // Set(3) {NaN, {…}, {…}}
+        /*
+        操作方法：
+            add()       添加某个值，返回 Set 结构本身...
+            delete()    删除某个值，返回一个布尔值，表示删除是否成功...
+            has()       返回一个布尔值，表示该值是否为 Set 的成员...
+            clear()     清除所有成员，没有返回值...
+        */
+        let opt = new Set();
+        opt.add(5)
+            .add(4)
+            .add({
+                name: "blue"
+            })
+            .add([4, 7, 5, 6]);
+        console.log(opt);
+        console.log(
+            opt.delete({
+                name: "blue"
+            })
+        ); // false
+        console.log(opt.delete(5)); // true
+        console.log(opt.has(4)); // true
+        opt.clear();
+        console.log(opt); // Set(0) {}
+        /*
+        遍历方法：
+            keys()      返回键名的遍历器...
+            values()    返回键值的遍历器...
+            entries()   返回键值对的遍历器...
+            forEach()   使用回调函数遍历每个成员...
+        */
+        let dps = new Set();
+        dps.add(5)
+            .add("woc")
+            .add({
+                name: "blue"
+            })
+            .add([4, 7, 5, 6])
+            .add(null)
+            .add(undefined)
+            .add(NaN);
+        console.log(dps);
+        for (var i of dps.keys()) {
+            console.log(i);
+        }
+        for (var i of dps.values()) {
+            console.log(i);
+        }
+        for (var i of dps.entries()) {
+            console.log(i);
+        }
+        dps.forEach((k, v) => {
+            console.log(k + ":" + v);
+        });
+        let ass = new Set([1, 5, 3, 2, 4]),
+            pee = new Set([6, 5, 2, 3]);
+        console.log(new Set([...ass, ...pee])); // Set(6) {1, 5, 3, 2, 4, 6}
+        console.log(new Set([...ass].filter(i => pee.has(i)))); // Set(3) {5, 3, 2}
+        console.log(new Set([...ass].filter(i => !pee.has(i)))); // Set(2) {1, 4}
+        /*
+        WeakSet 与 Set 的区别：
+            WeakSet 的成员只能是对象，不能是其他类型的值...
+            WeakSet 中的对象都是弱引用，垃圾回收机制不考虑 WeakSet 对该对象的引用...
+        */
+        let wst = new WeakSet();
+        try {
+            wst.add(1);
+            console.log(wst);
+        } catch (error) {
+            // TypeError: Invalid value used in weak set...
+            console.log(error);
+        } finally {
+            wst.add({
+                name: "WeakSet"
+            });
+            console.log(wst);
+        }
+        /*(⊙x⊙;)(⊙x⊙;)(⊙x⊙;)(⊙x⊙;)(⊙x⊙;)(⊙x⊙;)(⊙x⊙;)(⊙x⊙;)(⊙x⊙;)(⊙x⊙;)*/
+        const miniMap = new Map(),
+            o = {
+                o: "o"
+            };
+        miniMap.set(o, o);
+        console.log(miniMap); // Map(1) {{…} => {…}}
+        console.log(miniMap.get(o)); // {o: "o"}
+        console.log(miniMap.delete(o)); // true
+        console.log(miniMap.has(o)); // false
+        const m = new Map([["name", "张三丰"], ["age", 56]]);
+        console.log(m, m.size); // Map(2) {"name" => "张三丰", "age" => 56} 2
+        console.log(m.get("name"), m.get("age")); // 张三丰 56
+        const mset = new Set([["foo", 1], ["bar", 2]]),
+            mmap = new Map(mset);
+        console.log(mset); // Set(2) {Array(2), Array(2)}
+        console.log(mmap); // Map(2) {"foo" => 1, "bar" => 2}
+        const ms = new Map(mset),
+            mm = new Map(mmap);
+        console.log(ms); // Map(2) {"foo" => 1, "bar" => 2}
+        console.log(mm); // Map(2) {"foo" => 1, "bar" => 2}
+        /*
+        操作方法：
+            add()       添加某个值，返回 Set 结构本身...
+            delete()    删除某个值，返回一个布尔值，表示删除是否成功...
+            has()       返回一个布尔值，表示该值是否为 Set 的成员...
+            clear()     清除所有成员，没有返回值...
+        遍历方法：
+            keys()      返回键名的遍历器...
+            values()    返回键值的遍历器...
+            entries()   返回键值对的遍历器...
+            forEach()   使用回调函数遍历每个成员...
+        */
+        /*
+        WeakMap 与 Map 的区别：
+            WeakMap 只接受对象(非 null)作为键名，不接受其他类型的值作为键名...
+            WeakMap 键名所指向的对象，不计入垃圾回收机制...
+        */
+        console.log("to be continued...");
+    </script>
+</html>

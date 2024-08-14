@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>extend of string</title>
+    </head>
+
+    <body>
+        JavaScript 内部，字符以 UTF-16 的格式储存，每个字符固定为 2
+        个字节。对于那些需要 4 个字节储存的字符（Unicode 码点大于 0xFFFF
+        的字符），JavaScript 会认为它们是两个字符...
+    </body>
+    <script>
+        console.log("\u{1F680}" === "\uD83D\uDE80");
+        var a = "\u0061";
+        console.log(a); // a
+        var ABC = "\u{41}\u{42}\u{43}";
+        console.log(ABC);
+        console.log("hell\u{6F}");
+        console.log("\z" === "z"); // true
+        console.log("\172" === "z"); // true
+        console.log("\x7A" === "z"); // true
+        console.log("\u007A" === "z"); // true
+        console.log("\u{7A}" === "z"); // true
+        var c = "𠮷";
+        console.log({
+            length: c.length, // 2
+            "charAt(0)": c.charAt(0),
+            "charAt(1)": c.charAt(1),
+            "charCodeAt(0)": c.charCodeAt(0), // 55362
+            "charCodeAt(1)": c.charCodeAt(1) // 57271
+        });
+        for (let item of "fof") {
+            console.log(item); // f o f
+        }
+        let text = String.fromCodePoint(0x20bb7);
+        for (let i = 0; i < text.length; i++) {
+            console.log(text[i]);
+        }
+        for (let i of text) {
+            console.log(i); // 𠮷
+        }
+        var s = "abc";
+        try {
+            console.log({
+                "'abc'.charAt(0)": s.charAt(0), // "a"
+                "'𠮷'.charAt(0)": c.charAt(0), // "\uD842"
+                "'abc'.at(0)": s.at(0), // "a"
+                "'𠮷'.at(0)": c.at(0) // "𠮷"
+            });
+        } catch (error) {
+            console.log("处于提案阶段...");
+        }
+        /*
+        normalize(参数) ---> Unicode 正规化(不能识别中文) ---> 将字符串的不同表示方法统一为同样的样式...
+            NFC     默认参数，标准等价合成，视觉和语义上的等价...
+            NFD     标准等价分解，在标准等价的前提下，返回合成字符分解的多个简单字符...
+            NFKC    兼容等价合成，语义上等价视觉上不等价...
+            NFKD    兼容等价分解，在兼容等价的前提下，返回合成字符分解的多个简单字符...
+        */
+        console.log("\u01D1".normalize() === "\u004F\u030C".normalize()); // true
+        console.log("\u004F\u030C".normalize("NFC").length); // 1
+        console.log("\u004F\u030C".normalize("NFD").length); // 2
+        //⊙ˍ⊙ˍ⊙ˍ⊙ˍ⊙ˍ⊙ˍ⊙ˍ⊙ˍ⊙ˍ⊙ˍ⊙ˍ⊙ˍ⊙ˍ⊙ˍ⊙ˍ⊙ˍ⊙ˍ⊙ˍ⊙ˍ⊙ˍ⊙ˍ⊙ˍ⊙ˍ⊙ˍ⊙ˍ⊙//
+        /*
+        includes(要查找的字符串[, 起始位置])      返回布尔值，表示是否找到了参数字符串
+        startsWith(要查找的字符串[, 起始位置])    返回布尔值，表示参数字符串是否在原字符串的头部
+        endsWidth(要查找的字符串[, 结束位置])     返回布尔值，表示参数字符串是否在原字符串的尾部
+        repeat(n)                             返回一个新字符串，表示将原字符串重复 n 次
+        padStart(指定长度[, 填充内容])          头部补全，如果某个字符串不够指定长度，会在头部补全...
+        padEnd(指定长度[, 填充内容])            尾部补全，如果某个字符串不够指定长度，会在尾部补全...
+        */
+        let str = "Hello World ";
+        console.log(str.startsWith("he", 0)); // false
+        console.log(str.includes(" W", 0)); // true
+        console.log(str.endsWith("d ", str.length)); // true
+        console.log(str.repeat(2)); // Hello World Hello World
+        console.log(str.repeat(2.9)); // Hello World Hello World
+        console.log(str.repeat("2.9")); // Hello World Hello World
+        console.log(str.repeat(-0.5)); // ""
+        console.log(str.repeat(NaN)); // ""
+        try {
+            console.log(str.repeat(Infinity));
+        } catch (error) {
+            // RangeError: Invalid count value
+            console.log(error);
+        } finally {
+            try {
+                console.log(str.repeat(-1));
+            } catch (error) {
+                // RangeError: Invalid count value
+                console.log(error);
+            }
+        }
+        let pad = "pad";
+        console.log(pad.padStart(5, "x")); // xxpad
+        console.log(pad.padEnd(5, "x")); // padxx
+        console.log(pad.padStart(5)); // "  pad"
+        console.log(pad.padEnd(5)); // "pad  "
+        console.log(pad.padStart(5, "0123456789")); // "01pad"
+        console.log(pad.padEnd(5, "0123456789")); // "pad01"
+        // 提示字符串格式
+        var dd = "12";
+        var mm = "11-03";
+        console.log(dd.padStart(10, "YYYY-MM-DD")); // YYYY-MM-12
+        console.log(mm.padStart(10, "YYYY-MM-DD")); // YYYY-09-12
+        var nodes = `
+        <h3 style="text-align:center;">I Was Born in<br>
+        <i>1993-${mm}</i>,<br>
+        I'm Gonna <strong>${dd * 2 + 2}</strong> Years Old,<br>
+        ${lol() + "one"}${"..."}</h3>
+        `.trim();
+        document.querySelector("body").innerHTML += nodes;
+        function lol() {
+            alert`标签模板`;
+            return "Hi, Every";
+        }
+    </script>
+</html>

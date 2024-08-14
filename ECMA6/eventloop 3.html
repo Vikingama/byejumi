@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>event loop 3</title>
+    </head>
+
+    <body>
+        每一个 event loop
+        都有着众多不同的"任务来源"，这些"任务来源"能够保证其中的 task
+        能够有序的执行...
+        <hr />
+        在每一轮事件循环结束之后，浏览器可以自行选择将哪一个 source 当中的 task
+        加入到执行队列当中...
+        <hr />
+        task 是严格按照时间顺序压栈和执行的，浏览器能够使得 JavaScript
+        内部任务与 DOM 任务能够有序的执行...
+        <hr />
+        当一个 task 执行结束后，在下一个 task
+        执行开始前，浏览器可以对页面进行重新渲染； <br />
+        每一个 task 都是需要分配的，例如从用户的点击操作到一个点击事件，渲染
+        HTML 文档...
+        <hr />
+        microtask --- 需要在当前 task
+        执行结束后"立即执行"的任务（例如需要异步的执行任务而又不需要分配一个新的
+        task 的任务）...
+        <ul>
+            <li>microtask 任务队列是一个与 task 任务队列"相互独立"的队列...</li>
+            <li>microtask 任务将会在每一个 task 任务执行结束之后执行...</li>
+            <li>
+                每一个 task 中产生的 microtask 都将会添加到 microtask 队列中...
+            </li>
+            <li>microtask 中产生的 microtask 将会添加至当前队列的尾部...</li>
+            <li>
+                microtask 类型的任务目前包括了 MutationObserver 以及 Promise
+                的回调函数...
+            </li>
+        </ul>
+    </body>
+    <script>
+        // 第一个 task 的一部分...
+        console.log("script start"); // 1
+        // 一个新的 task...
+        setTimeout(() => {
+            // setTimeout 会在延迟时间结束后分配一个新的 task 至 event loop 中，而不是立即执行 ==> setTimeout 的回调函数会等待前面的 task 都执行结束后再运行...
+            console.log("timed out"); // 5
+        }, 0);
+        // microtask，会在当前 task 结束后立即执行...
+        Promise.resolve()
+            .then(() => {
+                /*
+                每当一个 Promise 被决议/被拒绝，便会将其回调函数添加至 microtask 任务队列中作为一个新的 microtask...
+                microtask 执行在当前 task 结束之后，下一个 task 开始之前...
+                */
+                console.log("promise first"); // 3
+            })
+            .then(() => {
+                console.log("promise last"); // 4
+            });
+        // 第一个 task 的一部分...
+        console.log("script end"); // 2
+    </script>
+</html>

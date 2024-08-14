@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>Lcy Tmcs</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                list-style: none;
+                text-decoration: none;
+            }
+
+            .broadcastMe {
+                position: relative;
+                width: 100%;
+                height: 100%;
+                overflow: hidden;
+            }
+
+            /* 内容主体 */
+            .broadcastMe .broadcastMe-list {
+                /* 如果为 absolute，就不能将外层的 div 撑起... */
+                position: relative;
+            }
+
+            .broadcastMe .broadcastMe-list .broadcastMe-item {
+                float: left;
+            }
+
+            .broadcastMe .broadcastMe-list .broadcastMe-item img {
+                width: 100%;
+                vertical-align: top;
+            }
+
+            /* 分页器主体 */
+            .broadcastMe .broadcastMe-tool {
+                position: absolute;
+                left: 0;
+                bottom: 0;
+                width: 100%;
+                text-align: center;
+            }
+
+            .broadcastMe .broadcastMe-tool .broadcastMe-spot {
+                display: inline-block;
+                margin: 0.2rem;
+                width: 0.8rem;
+                height: 0.8rem;
+                background: #ccc;
+                border-radius: 50%;
+                opacity: 0.6;
+                transition: background 0.6s;
+            }
+
+            .broadcastMe .broadcastMe-tool .broadcastMe-spot:hover {
+                background: #ff6700;
+                cursor: pointer;
+            }
+
+            .broadcastMe .broadcastMe-tool .broadcastMe-spot-active {
+                background: #ff6700;
+            }
+
+            /* 切换按钮主体 */
+            .broadcastMe .broadcastMe-btn {
+                position: absolute;
+                top: 50%;
+                margin-top: -3rem;
+                width: 3rem;
+                height: 6rem;
+                background: transparent;
+                color: #fff;
+                font-size: 2rem;
+                font-weight: bold;
+                line-height: 6rem;
+                opacity: 0.6;
+                text-align: center;
+                transition: background 0.6s;
+            }
+
+            .broadcastMe .broadcastMe-btn:hover {
+                background: #000;
+                cursor: pointer;
+            }
+
+            .broadcastMe .broadcastMe-btn-left {
+                left: -1px;
+            }
+
+            .broadcastMe .broadcastMe-btn-right {
+                right: -1px;
+            }
+
+            @media screen and (max-width: 768px) {
+                .broadcastMe .broadcastMe-btn {
+                    display: none;
+                }
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="container"></div>
+    </body>
+
+    <script>
+        function Lcy(el, images, props) {
+            if (!el || !images || !images.length) {
+                return;
+            }
+            // 📌📌📌
+            this.el = el;
+            this.images = images;
+            // 动画时长
+            this.transitionTime = props.transitionTime || 800;
+            // 轮播间隔
+            this.swipeTime = props.swipeTime || 8000;
+            // 📌📌📌
+            this.index = 1;
+            this.animateSwitcher = false; // true --- 轮播动画进行中，false --- 轮播动画完成...
+            // 📌📌📌
+            this.init();
+        }
+        // 准备 DOM 结构...
+        Lcy.prototype.init = function() {
+            let cssStr = `
+        .broadcastMe .broadcastMe-list {
+            width: ${(this.images.length + 2) * this.el.clientWidth}px;
+        }
+
+        .broadcastMe .broadcastMe-list .broadcastMe-item {
+            width: ${this.el.clientWidth}px;
+        }`;
+            let styleNode = document.createElement("style");
+            styleNode.innerHTML = cssStr;
+            document.head.appendChild(styleNode);
+            // 前后个补一张图...
+            let swipeItem = `
+        <div class="broadcastMe-item">
+            <a href="${
+                this.images[this.images.length - 1].url
+                    ? this.images[this.images.length - 1].url
+                    : "javascript:void(0)"
+            }">
+                <img src="${this.images[this.images.length - 1].src}"/>
+            </a>
+        </div>`;
+            this.images.map(item => {
+                swipeItem += `
+            <div class="broadcastMe-item">
+                <a href="${item.url ? item.url : "javascript:void(0)"}">
+                    <img src="${item.src}"/>
+                </a>
+            </div>`;
+            });
+            swipeItem += `
+        <div class="broadcastMe-item">
+            <a href="${
+                this.images[0].url ? this.images[0].url : "javascript:void(0)"
+            }">
+                <img src="${this.images[0].src}"/>
+            </a>
+        </div>`;
+            let pageNode = `
+        <div class="broadcastMe-btn broadcastMe-btn-left">&lt;</div>
+        <div class="broadcastMe-btn broadcastMe-btn-right">&gt;</div>`;
+            let dotNode = `
+        <div class="broadcastMe-tool">
+            <div class="broadcastMe-spot broadcastMe-spot-active"></div>`;
+            this.images.map((item, index) => {
+                if (index > 0) {
+                    dotNode += `<div class="broadcastMe-spot"></div>`;
+                }
+            });
+            dotNode += `</div>`;
+            let mainNode = `
+        <div class="broadcastMe">
+            <div class="broadcastMe-list" style="left:-${
+                this.el.clientWidth
+            }px">
+                ${swipeItem}
+            </div>
+            ${dotNode}
+            ${pageNode}
+        </div>`;
+            this.el.innerHTML = mainNode;
+            // 绑定事件
+            this.bindEvent();
+        };
+        // DOM 绑定事件，开始轮播...
+        Lcy.prototype.bindEvent = function() {
+            this.mainList = this.el.querySelector(".broadcastMe-list"); // 作用主体
+            this.mainDot = [...this.el.querySelectorAll(".broadcastMe-spot")]; // 分页器
+            this.mainLeft = this.el.querySelector(".broadcastMe-btn-left"); // 向左
+            this.mainRight = this.el.querySelector(".broadcastMe-btn-right"); // 向右
+            // 轮播函数
+            function play(direction) {
+                if (this.animateSwitcher) {
+                    return;
+                }
+                if (direction) {
+                    // 正向
+                    this.index++;
+                } else {
+                    // 反向
+                    this.index--;
+                }
+                this.renderDom();
+            }
+            // 绑定左右按钮事件
+            this.mainLeft.addEventListener("click", play.bind(this, false));
+            this.mainRight.addEventListener("click", play.bind(this, true));
+            // 绑定分页器事件
+            this.mainDot.map(item => {
+                item.addEventListener("click", e => {
+                    this.dotClick(e.target);
+                });
+            });
+            // 实现自动轮播
+            let timer = setInterval(play.bind(this, true), this.swipeTime);
+            this.el.addEventListener("mouseover", () => {
+                clearInterval(timer);
+            });
+            this.el.addEventListener("mouseout", () => {
+                timer = setInterval(play.bind(this, true), this.swipeTime);
+            });
+            // 移动端手势
+            let startX = 0,
+                offsetX = 0;
+            this.el.addEventListener("touchstart", e => {
+                clearInterval(timer);
+                this.animateSwitcher = true;
+                startX = e.changedTouches[0].pageX;
+                offsetX = this.mainList.offsetLeft;
+            });
+            this.el.addEventListener("touchmove", e => {
+                let changedX = e.changedTouches[0].pageX - startX;
+                // if (Math.abs(changedX) > this.el.clientWidth) {
+                if (changedX < -this.el.clientWidth) {
+                    changedX = -this.el.clientWidth;
+                } else if (changedX > this.el.clientWidth) {
+                    changedX = this.el.clientWidth;
+                }
+                // }
+                let shouldX = offsetX + changedX;
+                this.mainList.style.transitionProperty = "none";
+                this.mainList.style.left = shouldX + "px";
+            });
+            this.el.addEventListener("touchend", e => {
+                let currentLeft = this.mainList.offsetLeft;
+                this.animateSwitcher = false;
+                this.index = -Math.round(currentLeft / this.el.clientWidth);
+                timer = setInterval(play.bind(this, true), this.swipeTime);
+                this.renderDom();
+            });
+        };
+        Lcy.prototype.renderDom = function() {
+            this.animateSwitcher = true;
+            this.mainList.style.transition =
+                "left " + this.transitionTime / 1000 + "s";
+            this.mainList.style.left = -this.el.clientWidth * this.index + "px";
+            setTimeout(() => {
+                if (this.index < 1) {
+                    this.mainList.style.transitionProperty = "none";
+                    this.index = this.images.length;
+                    this.mainList.style.left =
+                        -this.el.clientWidth * this.index + "px";
+                } else if (this.index > this.images.length) {
+                    this.mainList.style.transitionProperty = "none";
+                    this.index = 1;
+                    this.mainList.style.left =
+                        -this.el.clientWidth * this.index + "px";
+                }
+                this.renderDot();
+                this.animateSwitcher = false;
+            }, this.transitionTime);
+        };
+        Lcy.prototype.renderDot = function() {
+            this.mainDot.forEach((item, index) => {
+                if (this.index - 1 == index) {
+                    item.className = "broadcastMe-spot broadcastMe-spot-active";
+                } else {
+                    item.className = "broadcastMe-spot";
+                }
+            });
+        };
+        Lcy.prototype.dotClick = function(target) {
+            for (let i = 0; i < this.mainDot.length; i++) {
+                if (this.mainDot[i] == target) {
+                    this.index = i + 1;
+                    this.renderDom();
+                    break;
+                }
+            }
+        };
+    </script>
+
+    <script>
+        var container = document.getElementById("container"),
+            images = [
+                {
+                    src: "./resource/eggs.jpg",
+                    url: "javascript:void(0)"
+                },
+                {
+                    src: "./resource/invite.jpg",
+                    url: "javascript:void(0)"
+                },
+                {
+                    src: "./resource/report.jpg",
+                    url: "javascript:void(0)"
+                },
+                {
+                    src: "./resource/turtles.jpg",
+                    url: "javascript:void(0)"
+                }
+            ];
+        new Lcy(container, images, {
+            transitionTime: 800, // 切换动画时间
+            swipeTime: 3000 // 切换下一张时间
+        });
+    </script>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>require</title>
+    </head>
+
+    <body>
+        require.js ---> 代码模块化，使用 moduleID 替代 URL...
+        <hr />
+        baseUrl ---> 加载代码的相对地址，如果没有配置，则默认为包含 require.js
+        的那个 HTML 所属的路径...
+        <hr />
+        require.js 默认加载的为 JS 资源，无需在 moduleID 后加上 .js 后缀...
+        <hr />
+        如果一个 module ID 符合以下条件，其 ID 解析会避开 baseUrl + path
+        的配置：
+        <ul>
+            <li>以 .js 结束</li>
+            <li>以 "/" 开始</li>
+            <li>包含 URL 协议, 如 "http:" 或 "https:"</li>
+        </ul>
+        <hr />
+        require.js 使用 head.appendChild() 将每一个依赖加载为一个 script
+        标签；等待所有的依赖加载完毕，计算出模块定义函数正确调用顺序，然后依次调用它们...
+    </body>
+    <!-- data-main 属性告诉 require.js 在加载完成之后加载 index.js（异步） -->
+    <!-- <script src="https://cdn.bootcss.com/require.js/2.3.5/require.min.js" data-main="./script/index.js"></script> -->
+    <script src="https://cdn.bootcss.com/require.js/2.3.5/require.min.js"></script>
+    <!-- data-main 属性真坑爹，会偷偷改写 baseUrl 为当前目录，不推荐使用... -->
+    <script src="./script/index.js"></script>
+    <!-- 同步加载 -->
+    <script src="./script/other.js"></script>
+    <script>
+        console.log("outter require area");
+        require([
+            "main",
+            "submix",
+            "plugin/p1",
+            "plugin/p4",
+            "plugin/p6",
+            "backbone"
+        ], function(main, submix, p1, p4, p6, backbone) {
+            /*
+                require([dependencies], callback)
+                    dependencies --- 数组，表示所依赖的模块...
+                    callback --- 回调函数，当前面指定的模块都加载成功后，它将被调用...
+            */
+            console.log("inner require area");
+            // jquery、main、submix 加载顺序不能确定，异步加载...
+            console.log(p1);
+            p4("require");
+            p6.printSong();
+            // 在加载 jquery 和 underscore 之后才会加载 Backbone...
+            console.log(backbone.VERSION);
+            // define --- RequireJS 定义的一个全局变量，用来定义模块...
+            console.log(define);
+        });
+    </script>
+</html>

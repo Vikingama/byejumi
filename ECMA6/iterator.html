@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>iterator</title>
+    </head>
+
+    <body>
+        Array、Map、Set、String、TypedArray、NodeList、arguments...
+        <hr />
+        遍历器是一种机制，是一种接口，为各种不同的数据结构提供统一的访问机制...
+        <hr />
+        任何数据结构只要部署 Iterator
+        接口，就可以完成遍历操作（依次处理该数据结构的所有成员）...
+        <hr />
+        Iterator 的作用：
+        <ul>
+            <li>为各种数据结构，提供一个统一的、简便的访问接口...</li>
+            <li>使得数据结构的成员能够按某种次序排列...</li>
+            <li>for...of...</li>
+        </ul>
+        <hr />
+        Iterator 的便利过程：
+        <ul>
+            <li>创建一个指针对象，指向当前数据结构的起始位置...</li>
+            <li>
+                第一次调用指针对象的next方法，可以将指针指向数据结构的第一个成员...
+            </li>
+            <li>
+                第二次调用指针对象的next方法，指针就指向数据结构的第二个成员...
+            </li>
+            <li>不断调用指针对象的next方法，直到它指向数据结构的结束位置...</li>
+        </ul>
+        <hr />
+        默认的 Iterator 接口部署在数据结构的 Symbol.iterator
+        属性，一个数据结构只要具有 Symbol.iterator
+        属性，就可以认为是"可遍历"的...
+        <hr />
+        对象（Object）之所以没有默认部署 Iterator
+        接口，是因为对象的哪个属性先遍历，哪个属性后遍历是不确定的，需要开发者手动指定...
+        <hr />
+        遍历器本质是一种线性处理，对于任何非线性的数据结构，部署遍历器接口，就等于部署一种线性转换...
+        <hr />
+        调用 iterator 的场合：
+        <ul>
+            <li>解构赋值</li>
+            <li>扩展运算符</li>
+            <li>yield</li>
+            <li>
+                for...of...、Array.from()、Map()、Set()、WeakMap()、WeakSet()、Promise.all()、Promise.race()
+            </li>
+        </ul>
+    </body>
+    <script>
+        var it = makeIterator([1, 2, 3]);
+        console.log(it.next()); // {value: 1}
+        console.log(it.next()); // {value: 2}
+        console.log(it.next()); // {value: 3}
+        console.log(it.next()); // {value: undefined}
+        function makeIterator(arr) {
+            var nextIndex = 0;
+            return {
+                next: function() {
+                    return nextIndex < arr.length
+                        ? {
+                              value: arr[nextIndex++]
+                          }
+                        : {
+                              value: undefined
+                          };
+                }
+            };
+        }
+        let arr = ["a", "b", "c"];
+        let iter = arr[Symbol.iterator]();
+        console.log(iter.next()); // {value: "a", done: false}
+        console.log(iter.next()); // {value: "b", done: false}
+        console.log(iter.next()); // {value: "c", done: false}
+        console.log(iter.next()); // {value: undefined, done: true}
+        function Obj(value) {
+            this.value = value;
+            this.next = null;
+        }
+        Obj.prototype[Symbol.iterator] = function() {
+            var iterator = {
+                next: next
+            };
+            var current = this;
+            // Obj {value: 1, next: Obj}
+            console.log(current);
+
+            function next() {
+                if (current) {
+                    var value = current.value;
+                    current = current.next;
+                    return {
+                        done: false,
+                        value: value
+                    };
+                } else {
+                    return {
+                        value: undefined,
+                        done: true
+                    };
+                }
+            }
+            return iterator;
+        };
+        var one = new Obj(1),
+            two = new Obj(2),
+            three = new Obj(3);
+        one.next = two;
+        two.next = three;
+        for (var i of one) {
+            console.log(i); // 1 2 3
+        }
+        let arrObj = {
+            0: "a",
+            1: "b",
+            2: "c",
+            length: 3,
+            [Symbol.iterator]: Array.prototype[Symbol.iterator]
+        };
+        for (var i of arrObj) {
+            console.log(i); // a b c
+        }
+        var str = new String("hi");
+        console.log([...str]); // ["h", "i"]
+        str[Symbol.iterator] = function() {
+            return {
+                next: function() {
+                    if (this.first) {
+                        this.first = false;
+                        return {
+                            value: "bye",
+                            done: false
+                        };
+                    } else {
+                        return {
+                            done: true
+                        };
+                    }
+                },
+                first: true
+            };
+        };
+        console.log([...str]); // ["bye"]
+        /*
+        遍历器：next()、return()、throw()，next 必须部署，return 与 throw 可选部署...
+            return：如果 for...of 循环提前退出（出错，或者有 break 语句），就会调用 return 方法...
+            如果一个对象在完成遍历前，需要清理或释放资源，就可以部署 return 方法...
+        */
+        function readLinesSync(file) {
+            return {
+                [Symbol.iterator]() {
+                    return {
+                        next() {
+                            return {
+                                done: false
+                            };
+                        },
+                        return() {
+                            return {
+                                done: true
+                            };
+                        }
+                    };
+                }
+            };
+        }
+        for (let line of readLinesSync("fileName")) {
+            console.log(line);
+            break;
+        }
+        const ars = [1, 22, 333, 4444, 55555];
+        for (let i in ars) {
+            // 键
+            console.log(i); // 0 1 2 3 4
+        }
+        for (let i of ars) {
+            // 值
+            console.log(i); // 1 22 333 4444 55555
+        }
+        // for...in 可直接遍历对象，for...of 需要部署 Iterator...
+        var os = {
+            edition: 6,
+            committee: "TC39",
+            standard: "ECMA-262"
+        };
+        for (let k in os) {
+            // 6 TC39 ECMA-262
+            console.log(os[k]);
+        }
+        for (let k of Object.keys(os)) {
+            // 6 TC39 ECMA-262
+            console.log(os[k]);
+        }
+    </script>
+</html>

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>复杂度、栈和队列</title>
+    </head>
+    <body>
+        <fieldset>
+            <legend>复杂度</legend>
+            (渐进)复杂度:
+            包括时间复杂度和空间复杂度，一个表示执行的快慢，一个表示内存的消耗，用来分析算法执行效率与数据规模之间的增长关系，越高阶复杂度的算法，执行效率越低...
+            <hr />
+            O: 代表了代码随数据规模增长的变化趋势...
+            <hr />
+            时间复杂度: 代码的总执行时间与每行代码的执行次数成正比...
+            <hr />
+            常数时间 O(1):
+            操作和数据量没关系，是一个固定时间的操作，比如说四则运算...
+            <hr />
+            对于一个算法来说，可能会计算出操作次数为 aN + 1，N
+            代表数据量。那么该算法的时间复杂度就是 O(N)...
+            <hr />
+            效率递减: O(1) 常数阶 -> O(logn) 对数阶 -> O(n) 线性阶 -> O(n^2)
+            平方阶 -> O(n^3) 立方阶 -> O(2^n) 指数阶 -> O(n!) 阶乘阶...
+            <hr />
+            空间复杂度:
+            表示算法的存储空间和数据规模之间的关系，常见的空间复杂度只有
+            O(1)、O(n)、O(n^2)...
+            <hr />
+            最好情况时间复杂度：代码在最理想情况下执行的时间复杂度。
+            <hr />
+            最坏情况时间复杂度：代码在最糟糕情况下执行的时间复杂度...
+            <hr />
+            平均情况时间复杂度：用代码在所有情况下执行的次数的加权平均值表示...
+            <hr />
+            均摊时间复杂度：在代码执行的所有复杂度情况中绝大部分是最好情况时间复杂度，个别情况是最坏情况时间复杂度且发生具有时序关系时，可以将个别最坏情况时间复杂度均摊到最好情况时间复杂度上...
+        </fieldset>
+        <fieldset>
+            <legend>栈</legend>
+            定义:
+            一种特殊的线性表，仅能在线性表的一端操作，栈顶允许操作，栈底不允许操作...
+            <hr />
+            特征: 新进后出/后进先出...
+            <hr />
+            实现: 以数组做基础或是以链表做基础...
+            <hr />
+            基本操作:
+            创建栈、销毁栈、出栈、入栈、获取栈顶元素、获取栈的大小、清空栈...
+        </fieldset>
+        <fieldset>
+            <legend>队列</legend>
+            定义:
+            一种线性表，只允许在表的前端（front）进行删除操作，而在表的后端（end）进行插入操作，进行插入操作的端称为队尾，进行删除操作的端称为队首...
+            <hr />
+            特征: 先进先出...
+            <hr />
+            实现: 以数组做基础或是以链表做基础...
+            <hr />
+            基本操作:
+            创建队列、销毁队列、入队、出队、清空队列、获取队头元素、获取队列的长度...
+        </fieldset>
+    </body>
+    <script>
+        class Stack {
+            constructor() {
+                this.items = []; // 使用数组存储数据
+            }
+            push(item) {
+                this.items.push(item); // 添加一个元素到栈顶
+            }
+            pop() {
+                this.items.pop(); // 弹出栈顶元素
+            }
+            top() {
+                return this.items[this.items.length - 1]; // 返回栈顶元素
+            }
+            isEmpty() {
+                return this.items.length === 0; // 判断栈是否为空
+            }
+            size() {
+                return this.items.length; // 获取栈的元素个数
+            }
+            clear() {
+                this.items = []; // 清空栈
+            }
+        }
+        function isDouble(str) {
+            const stack = new Stack(),
+                len = str.length;
+            for (let i = 0; i < len; i++) {
+                const item = str[i];
+                if (str[i] === "(") {
+                    stack.push(item); // 入栈
+                } else if (item === ")") {
+                    if (stack.isEmpty()) {
+                        return false;
+                    } else {
+                        stack.pop(); // 出栈
+                    }
+                }
+            }
+            return stack.size() === 0;
+        }
+        console.log(isDouble("(1(2(3(4)5)6)7)"));
+        console.log(isDouble("(0)9(8)7(6"));
+        class Queue {
+            constructor() {
+                this.items = [];
+            }
+            enqueue(item) {
+                this.items.push(item); // 向队尾添加一个元素
+            }
+            dequeue() {
+                return this.items.shift(); // 删除队首的一个元素
+            }
+            head() {
+                return this.items[0]; // 返回队首的元素
+            }
+            tail() {
+                return this.items[this.items.length - 1]; // 返回队尾的元素
+            }
+            size() {
+                return this.items.length; // 返回队列的元素
+            }
+            isEmpty() {
+                return this.items.length === 0; // 返回队列是否为空
+            }
+            clear() {
+                this.items = []; // 清空队列
+            }
+        }
+        /*
+            有一个数组存放了 100 个数据 0-99，要求每隔两个数删除一个数，到末尾时再循环至开头继续进行，求最后一个被删除的数字...
+                ->先将这 100 个数据放入队列，用 while 循环，终止的条件是队列里只有一个元素
+                    ->定义 index 变量从 0 开始计数，从队列头部删除一个元素，index + 1
+                        ->如果 index%3 === 0 ,说明这个元素需要被移除队列，否则的话就把它添加到队列的尾部
+        */
+        const sample = [];
+        for (let i = 0; i < 100; i++) {
+            sample.push(i);
+        }
+        function delRang(arr) {
+            var queue = new Queue(),
+                index = 0;
+            for (var i of arr) {
+                queue.enqueue(i);
+            }
+            while (queue.size() != 1) {
+                var item = queue.dequeue();
+                index++;
+                if (index % 3 != 0) {
+                    queue.enqueue(item);
+                }
+            }
+            console.log(queue.head()); // 90
+            return queue.head();
+        }
+        delRang(sample);
+        /*
+        斐波那契数列: 从第 3 项开始，每一项都等于前两项之和...
+            -> F(1)=1，F(2)=1, F(n)=F(n-1)+F(n-2), (n>=3，n∈N*), 需要用到递归的思想...
+        */
+        function Fibonacci(n, a = 1, b = 1) {
+            if (n <= 2) {
+                return b;
+            }
+            // 尾递归...好难懂...
+            return Fibonacci(n - 1, b, a + b);
+        }
+        console.log(Fibonacci(100));
+    </script>
+</html>

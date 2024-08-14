@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>Lazy Animate Advance</title>
+        <style>
+            div {
+                width: 50vw;
+                height: 20vh;
+                border: 1px solid black;
+                font-size: 16px;
+                line-height: 20vh;
+                text-align: center;
+                transition: all 0.5s;
+                transition-delay: 1000;
+            }
+
+            .into-view {
+                width: 100%;
+                font-size: 32px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div>1</div>
+        <div>2</div>
+        <div>3</div>
+        <div>4</div>
+        <div>5</div>
+        <div>6</div>
+        <div>7</div>
+        <div>8</div>
+        <div>9</div>
+        <div>10</div>
+        <div>11</div>
+        <div>12</div>
+        <div>13</div>
+        <div>14</div>
+        <div>15</div>
+        <div>16</div>
+        <div>17</div>
+        <div>18</div>
+        <div>19</div>
+        <div>20</div>
+    </body>
+    <script>
+        // 当元素进入视口，添加"into-view"类名
+        let divEles = document.querySelectorAll("div"),
+            iOr = new IntersectionObserver(
+                entries => {
+                    // IntersectionObserver API 是异步的，不随着目标元素的滚动同步触发，只有线程空闲下来，才会执行观察器...
+                    /*
+                    [{
+                    // 目标元素的矩形区域的信息
+                    boundingClientRect:...,
+                    // 目标元素的可见比例，完全可见时为 1，完全不可见时小于等于 0
+                    intersectionRatio:...,
+                    // 目标元素与视口（或根元素）的交叉区域的信息
+                    intersectionRect:...,
+                    // 是否发生交叉
+                    isIntersecting:...,
+                    // 根元素的矩形区域的信息
+                    rootBounds:...,
+                    // 被观察的目标元素
+                    target:...,
+                    // 可见性发生变化的时间(毫秒)
+                    time:...
+                    },{}...]
+                    */
+                    entries.forEach((item, index, ili) => {
+                        if (item.intersectionRatio != 0) {
+                            item.target.classList.add("into-view");
+                        } else {
+                            item.target.classList.remove("into-view");
+                        }
+                    });
+                },
+                {
+                    // 配置参数对象，可选
+                    /*
+                    threshold --- 决定什么时候触发回调函数，一个数组，每个成员都是一个门槛值，默认为 0，即交叉比例 intersectionRatio 达到 0 时触发回调函数...
+                    root --- 目标元素所在的容器节点，注意，容器元素必须是目标元素的祖先节点...
+                    rootMargin --- 定义根元素的 margin，用来扩展或缩小 rootBounds 这个矩形的大小，从而影响 intersectionRect 交叉区域的大小...
+                    */
+                }
+            );
+        divEles.forEach((item, index, ili) => {
+            iOr.observe(item);
+        });
+    </script>
+</html>

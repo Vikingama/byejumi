@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>WXLOGIN</title>
+        <script src="https://res.wx.qq.com/connect/zh_CN/htmledition/js/wxLogin.js"></script>
+    </head>
+
+    <body>
+        <div id="wxLogin"></div>
+    </body>
+    <script>
+        // 在需要使用微信登录的地方实例以下 JS 对象：
+        var obj = new WxLogin({
+            // 选填，true：手机点击确认登录后可以在 iframe 内跳转到 redirect_uri，false(默认)：手机点击确认登录后可以在 top window 跳转到 redirect_uri...
+            self_redirect: false,
+            // 必填，第三方页面显示二维码的容器 id...
+            id: "wxLogin",
+            // 必填，应用唯一标识，在微信开放平台提交应用审核通过后获得...
+            appid: "",
+            // 必填，应用授权作用域，拥有多个作用域用逗号（,）分隔，网页应用目前仅填写 snsapi_login 即可...
+            scope: "",
+            // 必填，重定向地址，需要进行 UrlEncode...
+            redirect_uri: "",
+            // 选填，该参数可于防止 csrf 攻击（跨站请求伪造攻击），授权请求后原样带回给第三方。建议带上该参数，可设置为简单的随机数加 session 进行校验...
+            state: "",
+            // 选填，提供"black"、"white"可选，默认为黑色文字描述...
+            style: "",
+            // 选填，自定义样式链接，第三方可根据实际需求覆盖默认样式...
+            href: ""
+        });
+    </script>
+</html>

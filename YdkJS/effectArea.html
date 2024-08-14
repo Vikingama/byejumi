@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>Effect Area</title>
+    </head>
+
+    <body></body>
+    <script>
+        function foo() {
+            console.log(a); // A ---> JS 没有动态作用域，只有词法作用域，this 某种程度上很像动态作用域...
+            // 函数被调用时，函数调用应用了 this 的默认绑定，this 指向全局对象(严格模式下 this 指向 undefined)...
+            console.log(this.a); // A
+        }
+
+        function bar() {
+            var a = "a";
+            foo();
+        }
+        // 默认绑定
+        function wow() {
+            // wow 严格来说不属于 obj1...
+            console.log(this.s);
+        }
+        var a = "A",
+            b = "B",
+            s = "global s",
+            obj1 = {
+                s: "S",
+                t: "T",
+                wow: wow
+            },
+            obj2 = {
+                s: "s",
+                t: "t",
+                obj1: obj1
+            };
+        bar();
+        obj1.wow(); // 调用时，会使用 obj1 上下文来引用函数，此时，obj1 拥有/包含 wow...
+        obj2.obj1.wow(); // 对象属性引用链只有上一层/最后一层在调用位置中起作用...
+        // 被隐式绑定的函数丢失绑定对象...
+        var wow1 = obj1.wow,
+            wow2 = obj2.obj1.wow;
+        wow1(); // global s
+        wow2(); // global s
+        // call()/apply() --- 可以直接指定 this 的绑定对象...
+        function solidConnect1() {
+            console.log(this.a);
+        }
+        var sc = {
+            a: 2
+        };
+        var solidConnect2 = function() {
+            solidConnect1.call(sc); // 将 solidConnect1 的 this 指向 sc...
+        };
+        solidConnect2(); // 2
+        solidConnect2.call(window); // 2
+        // API 绑定 this...
+        var olo = {
+                l: "l"
+            },
+            arr = [1, 2];
+        arr.forEach(apiThis, olo);
+
+        function apiThis(el) {
+            console.log(this === olo); // true
+            console.log(el, this.l);
+        }
+        // new 操作符绑定 this
+        function Papa(x) {
+            /*
+            创建/构造一个全新的对象;
+            创建的新对象会被执行 prototype 链接;
+            创建的新对象会绑定到函数调用的 this;
+            如果函数没有返回其他对象，那么 new 表达式中的函数调用会自动返回这个对象...
+            */
+            this.x = x;
+        }
+        var oko = new Papa(2),
+            mobi = new Papa(3);
+        console.log(oko, mobi);
+        // 绑定 this 的优先级：new 绑定 > 显示绑定 > 隐式绑定 > 默认绑定...
+        function defaultThis() {
+            console.log(this.df);
+        }
+        var df = "df";
+        // 把 null 或者 undefined 作为 this 的绑定对象传入 call、apply 或者 bind => 默认绑定规则...
+        defaultThis.call(null);
+        defaultThis.call(undefined);
+        // bind --- 函数参数柯里化...
+        function curry(a, b) {
+            console.log("Curry: " + a, b);
+        }
+        var cur = curry.bind(null, 2);
+        cur(3); // Curry: 2 3
+        console.log("ф");
+
+        function hf() {
+            console.log(this.hf);
+        }
+        var p = {
+                hf: "p",
+                fnc: hf
+            },
+            q = {
+                hf: "q"
+            },
+            hf = "global hf";
+        console.log((q.fnc = p.fnc)); // => function hf() {...}
+        (q.fnc = p.fnc)(); // global hf...
+        // this 软绑定...
+        if (!Function.prototype.softBind) {
+            Function.prototype.softBind = function(obj) {
+                var _this = this, // 调用软绑定的函数...
+                    _paras = [].splice.call(arguments, 1),
+                    _bound = function() {
+                        // 重新定义 this 的指向...
+                        return _this.apply(
+                            !this || this === (window || global) ? obj : this,
+                            _paras.concat.apply(_paras, arguments)
+                        );
+                    };
+                _bound.prototype = Object.create(_this.prototype);
+                return _bound;
+            };
+        }
+
+        function nameFn() {
+            console.log("name: " + this.name);
+        }
+        var o1 = {
+                name: "o1"
+            },
+            o2 = {
+                name: "o2"
+            },
+            o3 = {
+                name: "o3"
+            };
+        var o1fn = nameFn.softBind(o1);
+        o2.fn = nameFn.softBind(o1);
+        o2.fn(); // name: o2
+        o1fn.call(o3); // name: o3
+        setTimeout(o2.fn, 0); // name: o1
+        // 箭头函数是根据外层(函数/全局)作用域来决定 this...
+        function arrow1() {
+            return para => {
+                console.log(this.para);
+            };
+        }
+        const arrow2 = para => {
+            console.log(this.para);
+        };
+        var lol1 = {
+                para: 1
+            },
+            lol2 = {
+                para: 2
+            };
+        var park = arrow1.call(lol1);
+        park.call(lol2); // 1
+        // call/apply 没办法改变箭头函数的 this 指向...
+        arrow2.call(lol1); // undefined
+        arrow2.call(lol2); // undefined
+    </script>
+</html>

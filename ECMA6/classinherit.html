@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>class inherit</title>
+    </head>
+
+    <body></body>
+    <script>
+        class Father {
+            constructor(beef) {
+                this.beef = beef;
+            }
+            static how() {
+                console.log("do...");
+            }
+            say() {
+                return this.beef;
+            }
+        }
+        // ES6 通过 extends 关键字实现继承...
+        class Son extends Father {
+            /*
+            子类在构造函数中必须调用 super 方法，否则子类会得不到 this...
+            子类自己的 this 对象，必须先通过父类的构造函数完成塑造，得到与父类同样的实例属性和方法，然后再加上子类自己的实例属性和方法...
+            */
+            constructor(fatherName, meat) {
+                // 调用父类的构造函数...
+                try {
+                    // 在子类的 super 函数调用之前访问 this 对象，会报错...
+                    console.log(this);
+                } catch (error) {
+                    // ReferenceError
+                    console.log(error);
+                }
+                // super 虽然代表了父类的构造函数，但返回的是子类的实例 / super内部的 this 指向子类...
+                super(fatherName); // Father.prototype.constructor.call(this)...
+                this.meat = meat;
+            }
+            say() {
+                // 调用父类的 say 方法...
+                return super.say() + " is " + this.meat + "'s papa...";
+            }
+        }
+        const gzj = new Son("xh", "zj");
+        console.log(gzj.say());
+        /*
+        ES5 继承的实质是先创建子类的实例对象 this，然后将父类的方法添加到 this 上...
+        ES6 继承的实质是先将父类实例对象的属性和方法加到 this 上(super 方法)，再用子类的构造函数修改 this...
+        */
+        class Daughter extends Father {
+            /*
+            如果子类中没有显式定义 constructor 方法，super 将被默认添加...
+                constructor(...args){
+                    // 会被默认添加...
+                    super(...args);
+                }
+            */
+        }
+        console.log(gzj instanceof Father); // true
+        console.log(gzj instanceof Son); // true
+        console.log(Son.how()); // 父类的静态方法会被子类继承...
+        console.log(Object.getPrototypeOf(Son)); // class Father
+        class Papa {
+            constructor() {
+                console.log(new.target);
+            }
+        }
+        class Babe extends Papa {
+            constructor() {
+                // 在 super 执行时，它指向的是子类的构造函数，而不是父类的构造函数...
+                super(); // 只能在子类的构造函数中调用...
+            }
+        }
+        new Papa(); // class Papa
+        new Babe(); // class Babe
+        // 当 super 作为对象时，在普通方法中指向"父类的原型对象"，在静态方法中指向"父类"...
+        class A {
+            constructor() {
+                this.age = 1;
+                this.x = "ax";
+                A.prototype.sex = "male";
+            }
+            a() {
+                return "a";
+            }
+            print() {
+                console.log(this.x);
+            }
+        }
+        class B extends A {
+            constructor() {
+                super(); // 指向子类 B 的构造函数...
+                console.log(super.a()); // 此处的 super 指向父类 A <==> A.prototype.a()...
+                this.x = "bx";
+            }
+            get b() {
+                // 普通方法中，super 指向父类的原型链，获取不到 age 属性...
+                return super.age;
+            }
+            o() {
+                return super.sex;
+            }
+            speak() {
+                // 在子类普通方法中通过 super 调用父类的方法时，方法内部的 this 指向当前的子类实例...
+                super.print(); // <==> A.prototype.print.call(this)...this 指向 B 的实例...
+                // ==> 如果通过 super 对某个属性赋值，这时 super 就是 this，赋值的属性会变成子类实例的属性...
+            }
+        }
+        let b = new B(); // a
+        console.log(b); // { age:1, b: undefined }
+        console.log(b.b); // undefined
+        console.log(b.o()); // male，从父类 A 的原型链上获取...
+        console.log(b.speak()); // bx
+        class First {
+            constructor() {
+                this.x = 1;
+            }
+        }
+        class Second extends First {
+            constructor() {
+                super();
+                this.x = 2;
+                super.x = 3; // ==> this.x = 3
+                console.log(super.x); // undefined ==> A.prototype.x
+                console.log(this.x);
+            }
+        }
+        new Second();
+        class C {
+            constructor() {
+                this.dc = "C";
+            }
+            static say(msg) {
+                console.log("static " + msg);
+            }
+            say(msg) {
+                console.log("instance " + msg);
+            }
+            speak(content) {
+                console.log(content + " " + this.dc);
+            }
+        }
+        class D extends C {
+            constructor() {
+                super();
+                this.dc = "D";
+            }
+            static say(msg) {
+                super.say(msg); // 指向父类
+            }
+            say(msg) {
+                super.say(msg); // 指向父类原型对象
+            }
+            static speak() {
+                super.speak("static");
+            }
+            speak() {
+                super.speak("instance");
+            }
+        }
+        D.say(); // static undefined
+        new D().say(); // instance undefined
+        new D().speak(); // D
+        // prototype & __proto__
+        class Hen {
+            constructor() {
+                return "Egg...";
+            }
+        }
+        class Egg extends Hen {}
+        // 构造函数的继承，指向父类...
+        console.log(Egg.__proto__); // class Hen
+        // 方法的继承，指向父类的 prototype...
+        console.log(Egg.prototype.__proto__);
+        class Duck extends Object {
+            /*
+            作为对象：子类的原型是父类...
+            作为构造函数：子类的原型对象是父类的原型对象的实例...
+            */
+        }
+        console.log(new Duck());
+        /*
+        原生构造函数：
+            Boolean()
+            Number()
+            String()
+            Array()
+            Date()
+            Function()
+            RegExp()
+            Error()
+            Object()
+        原生构造函数是无法继承的...
+        ES5 是先新建子类的实例对象 this，再将父类的属性添加到子类上，由于父类的内部属性无法获取，导致无法继承原生的构造函数...
+        ES6 允许继承原生构造函数定义子类，因为 ES6 是先新建父类的实例对象 this，然后再用子类的构造函数修饰 this，使得父类的所有行为都可以继承...
+        */
+        // Mixin --- 多个对象合成一个新的对象，新对象具有各个组成成员的接口...
+        const o1 = {
+            p: 1
+        };
+        const o2 = {
+            q: 2
+        };
+        // 简单的实现
+        const o3 = { ...o1, ...o2 };
+        console.log(o3); // {p: 1, q: 2}...
+        // 完备的实现
+        function mix(...mixins) {
+            class Mix {}
+            for (let mixin of mixins) {
+                copyProperties(Mix.prototype, mixin); // 拷贝实例属性
+                copyProperties(Mix.prototype, Reflect.getPrototypeOf(mixin)); // 拷贝原型属性
+            }
+            return Mix;
+        }
+        function copyProperties(to, from) {
+            for (let key of Reflect.ownKeys(from)) {
+                if (
+                    key != "constructor" &&
+                    key != "prototype" &&
+                    key != "name"
+                ) {
+                    let desc = Object.getOwnPropertyDescriptor(from, key);
+                    Object.defineProperty(to, key, desc);
+                }
+            }
+        }
+    </script>
+</html>

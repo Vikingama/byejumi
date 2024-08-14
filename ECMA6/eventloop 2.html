@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>event loop 2</title>
+    </head>
+
+    <body>
+        JavaScript
+        是一门单线程的语言，其事件循环的特性使得我们可以异步的执行程序；这些异步的程序也就是一个又一个独立的任务，这些任务包括了
+        setTimeout、setInterval、ajax、eventListener...
+        <hr />
+        <ul>
+            <li>
+                同步执行任务会造成阻塞，将 JS
+                分成一个又一个的任务，通过不停的循环来执行事件队列中的任务；
+            </li>
+            <li>
+                当我们设置一个延迟函数的时候，当前脚本并不会阻塞，它只是会在浏览器的"事件表"中进行记录，程序会继续向下执行；
+            </li>
+            <li>
+                当延迟的时间结束之后，事件表会将回调函数添加至"事件队列"中，事件队列拿到任务后便将任务压入"执行栈"中，执行栈执行任务...
+            </li>
+            <hr />
+            <li>
+                "事件队列"是一个存储着待执行任务的队列，其中的任务"严格按照时间先后"顺序执行；
+            </li>
+            <li>排在队头的任务将会率先执行，而排在队尾的任务会最后执行；</li>
+            <li>
+                事件队列每次仅执行一个任务，在该任务执行完毕之后，再执行下一个任务...
+            </li>
+            <hr />
+            <li>"执行栈"则是一个类似于函数调用栈的"运行容器"；</li>
+            <li>当执行栈为空时，JS 引擎便检查事件队列；</li>
+            <li>如果不为空，事件队列便将第一个任务压入执行栈中运行...</li>
+            <hr />
+            事件循环的运行机制大致分为以下步骤：
+            <ol>
+                <li>检查事件队列是否为空，如果为空，则继续检查；</li>
+                <li>如不为空，则取出事件队列的首部，压入执行栈；</li>
+                <li>执行任务；</li>
+                <li>
+                    检查执行栈，如果执行栈为空，则跳回第 1
+                    步；如不为空，则继续检查...
+                </li>
+            </ol>
+            <hr />
+            <ul>
+                <li>
+                    设置一个回调函数，将 ajax 请求挂起，然后继续执行后面的代码；
+                </li>
+                <li>
+                    请求何时响应，对我们的程序不会有影响，甚至它可能永远也不响应，也不会使浏览器阻塞；
+                </li>
+                <li>
+                    当响应成功了以后，浏览器的事件表则会将回调函数添加至事件队列中等待执行...
+                </li>
+                <li>当注册了一个事件监听器时，浏览器事件表会进行登记；</li>
+                <li>当触发事件时，事件表便将回调函数添加至事件队列当中...</li>
+            </ul>
+        </ul>
+    </body>
+    <script>
+        console.log("script start"); // 1
+        // setTimeout 的回调函数只是会被添加至事件队列，而不是立即执行...
+        setTimeout(() => {
+            // 由于当前的任务没有执行结束，所以 setTimeout 任务不会执行...
+            console.log("time out"); // 3
+        }, 0);
+        let arr = [];
+        for (let i = 0; i < 666666; i++) {
+            // do something
+            arr[i] = i;
+        }
+        // 当前任务执行完毕，执行栈为空，这时事件队列才会把 setTimeout 回调函数压入执行栈执行...
+        console.log("script end"); // 2
+        let demo = Array(999);
+        demo.fill(9);
+
+        function asyncFor(array, handler) {
+            let sit = setInterval(function() {
+                if (array.length == 0) {
+                    clearInterval(sit);
+                } else {
+                    handler(array.shift());
+                }
+            }, 0);
+        }
+        // 异步遍历 --- 平滑
+        asyncFor(demo, function(v) {
+            console.log("异步：" + v);
+        });
+        // 同步遍历 --- 卡顿
+        demo.forEach(function(item, index, arr) {
+            console.log("同步：" + item);
+        });
+    </script>
+</html>

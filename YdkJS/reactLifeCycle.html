@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>React Life Cycle</title>
+    <style>
+        xmp {
+            border: 1px dashed black;
+            font-family: "Microsoft Yahei";
+        }
+    </style>
+</head>
+
+<body>
+    以 JSX 的形式将组件注入 React.render 方法的第一个参数
+    <br>
+    --->
+    <br>
+    JSX 会被 React 内部转译，使用 React.createElement 创建 React 元素
+    <br>
+    --->
+    <br>
+    React.render 方法获取到 React 元素后将其实例化
+    <br>
+    --->
+    <br>
+    根据实例化的 React 元素创建出真实的 DOM 元素
+    <br>
+    --->
+    <br>
+    创建好的 DOM 元素会被插入到目标 DOM 容器中...
+    <hr>
+    React Fiber 是 React 的底层引擎，他将 React 应用界面更新的过程分为两个主要部分：调度过程 & 执行过程...
+    <ul>
+        <li>
+            对虚拟 DOM 进行 Diff 操作之后进入调度阶段，Fiber 计算出最优化的调度方法，之后提交调度计算结果，将内容渲染到页面中...
+            <br>
+            调度过程中被触发的生命周期函数：
+            <ul>
+                <li>componentWillMount：渲染之前触发，只会触发一次，触发时机几乎和 constructor 函数相同，在此方法里对 state 进行定义或修改不会触发重新渲染...</li>
+                <li>componentWillReceiveProps：在调用 setState 方法之后、子组件收到 props 之后触发，通过 nextProps 获取 新的 props，通过 props
+                    获取之前的 props...</li>
+                <li>shouldComponentUpdate：默认返回 true；如果返回 false 更新流程会被跳过，render 也不会继续被触发；在此自定义判断规则可以提高应用性能...</li>
+                <li>componentWillUpdate：渲染之前触发，无法调用 setState，可以理解为更改 state 为时已晚，可以在 componentWillReceiveProps 中更新
+                    state...</li>
+            </ul>
+        </li>
+        <li>
+            执行过程中被触发的生命周期函数：
+            <ul>
+                <li>componentDidMount：初次渲染完成之后被触发，只会触发一次，可以访问 DOM 元素，推荐在此函数中进行 ajax 请求...</li>
+                <li>componentDidUpdate：适合发起 ajax 请求，可以比较前后 props 的变化...</li>
+                <li>componentWillUnmount：在卸载流程中触发，可以解绑组件绑定的事件、计时器等...</li>
+            </ul>
+        </li>
+        <li>
+            React 的初次渲染会进行挂载流程，挂载之后的后续渲染进行的都是更新流程；
+            可以通过 ReactDOM.unmountComponentAtNode 方法将组件卸载...
+        </li>
+    </ul>
+</body>
+
+</html>

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>let & const</title>
+    </head>
+
+    <body>
+        ES6 声明变量的方式：var、function、let、const、import、class...
+        <hr />
+        顶层对象，在浏览器环境指的是 window 对象，在 Node 指的是 global 对象...
+        <hr />
+        ES6 规定 var 命令和 function
+        命令声明的全局变量，依旧是顶层对象的属性；let 命令、const 命令、class
+        命令声明的全局变量，不属于顶层对象的属性...
+        <hr />
+        如果区块中存在 let和const
+        命令，这个区块对这些命令声明的变量，从一开始就形成了封闭作用域。凡是在声明之前就使用这些变量，就会报错...
+        <hr />
+        const
+        实际上保证的，并不是变量的值不得改动，而是变量指向的那个内存地址所保存的数据不得改动。对于简单类型的数据（数值、字符串、布尔值），值就保存在变量指向的那个内存地址，因此等同于常量...
+        <hr />
+        对于复合类型的数据（主要是对象和数组），变量指向的内存地址，保存的只是一个指向实际数据的指针，const
+        只能保证这个指针是固定的（即总是指向另一个固定的地址），至于它指向的数据结构是不是可变的，就完全不能控制了...
+        <hr />
+        如果要将对象冻结，应使用 Object.freeze()...
+        <hr />
+        Global 对象：
+        <ul>
+            <li>
+                浏览器里面，顶层对象是 window，但 Node 和 Web Worker 没有
+                window...
+            </li>
+            <li>浏览器里面，self 指向顶层对象，但是 Node 没有 self...</li>
+            <li>Node 里面，顶层对象是 global，但其他环境都不支持...</li>
+            <li>
+                全局环境中，this 会返回顶层对象。Node 模块和 ES6
+                模块中，this返回的是当前模块...
+            </li>
+            <li>
+                函数里面的
+                this，如果函数不是作为对象的方法运行，而是单纯作为函数运行，this
+                会指向顶层对象...
+            </li>
+            <li>
+                不管是严格模式还是普通模式，new Function('return
+                this')()，总是会返回全局对象...
+            </li>
+        </ul>
+    </body>
+    <script>
+        for (let i = 0; i < 3; i++) {
+            let i = "abc";
+            console.log(i);
+        }
+        console.log(vars); // undefined
+        var vars = 1;
+        try {
+            // 不会变量提升...
+            console.log(lets);
+            let lets = 1;
+        } catch (error) {
+            console.log(error); // ReferenceError
+        }
+        var sample = 123;
+        if (true) {
+            try {
+                // 暂时性死区 ===> typeof 不再是一个 100% 安全的操作...
+                console.log(sample);
+                // 块级作用域内存在 let/const 命令，它所声明的变量就“绑定”这个区域，不再受外部的影响...
+                let sample;
+            } catch (error) {
+                console.log(error); // ReferenceError
+            }
+        }
+        try {
+            console.log(typeof x);
+            let x;
+        } catch (error) {
+            console.log(error); // ReferenceError
+        } finally {
+            console.log(typeof y); // undefined
+            var y;
+        }
+        try {
+            function bar(x = y, y = 2) {
+                // 暂时性死区，参数 x 默认值等于另一个参数 y，而此时 y 还没有声明，属于"死区"...
+                console.log(x + y);
+            }
+            bar();
+        } catch (error) {
+            console.log(error); // ReferenceError
+        } finally {
+            function alpha(x = 2, y = x) {
+                console.log(x + y);
+            }
+            alpha();
+        }
+        try {
+            // 使用 let 声明变量时，只要变量在还没有声明完成前使用，就会报错...
+            let p = p;
+        } catch (error) {
+            console.log(error); // ReferenceError
+        } finally {
+            var q = q;
+        }
+        try {
+            // Uncaught SyntaxError，不能重复声明...
+            let o = 0;
+            // let o = 1;
+        } catch (error) {
+            console.log(error);
+        } finally {
+            var c = 0;
+            var c = 1;
+        }
+        try {
+            (function(arg) {
+                // Uncaught SyntaxError，不能重复声明...
+                // let arg;
+            })();
+        } catch (error) {
+            console.log(error);
+        } finally {
+            (function(arg) {
+                {
+                    let arg;
+                }
+            })();
+        }
+        var tmp = 123;
+        (function() {
+            console.log(tmp); // undefined
+            if (false) {
+                // 变量提升，内层的 tmp 变量覆盖了外层的 tmp 变量...
+                var tmp = 456;
+            }
+        })();
+        let v = "v";
+        if (true) {
+            let v = 123;
+        }
+        console.log(v); // v
+        {
+            let c = "c";
+
+            function outer() {
+                console.log("outer");
+            }
+            if (true) {
+                let c = "cc";
+                console.log(c); // cc
+                function inner() {
+                    console.log("inner");
+                }
+                outer();
+            }
+            console.log(c); // c
+            // ES6 不允许，但是浏览器为了兼容老代码，实际上可以调用...
+            inner(); // OK
+        }
+        inner(); // OK
+        const pi = 3.14;
+        try {
+            pi = 3.14;
+            console.log(pi);
+            const foo = "init"; // 必须有初始值...Uncaught SyntaxError...
+        } catch (error) {
+            // 即使再赋给同样的值，也会报错...
+            console.log(error); // TypeError
+        } finally {
+            console.log(pi * 2);
+        }
+        const single = {
+            name: "p!nk",
+            say: function() {
+                return new Function("return this")();
+            }
+        };
+        console.log(single);
+        single.name = "b!ue";
+        single.age = 24;
+        console.log(single);
+        Object.freeze(single);
+        single.sex = "man";
+        if (single.hasOwnProperty("name") && !single.hasOwnProperty("sex")) {
+            console.log("Freeze do work...");
+        }
+        var g1 = "HAVA";
+        console.log(window.g1);
+        let g2 = "VANA";
+        console.log(window.g2); // undefined
+        console.log(single.say()); // window
+    </script>
+</html>

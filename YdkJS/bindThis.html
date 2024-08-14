@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>Bind This</title>
+    </head>
+
+    <body>
+        prototype:构造函数（构造函数也是对象）的属性，指向一块内存，保存着共有属性和方法，如果没有
+        prototype，那么属性和方法就没有立足之地...
+        <hr />
+        __proto__:对象实例的属性，指向同一块内存，如果没有__proto__，那么一个对象就不知道自己的属性和方法有哪些...
+        <hr />
+        constructor:prototype 的一个属性，指向构造函数...
+    </body>
+    <script>
+        console.log(Object.__proto__); // function
+        console.log(Object.prototype); // object
+        console.log("👻👻👻");
+        Object.prototype.shout = "scream"; // 会影响到所有的对象实例，因为这是对对象的构造函数进行的改写...
+        var name = "window name",
+            sample = {
+                name: "sample name",
+                speak: speak
+            },
+            speakPark = sample.speak;
+        speak(); // this - window
+        sample.speak(); // this - sample
+        speakPark(); // this - window
+        setTimeout(function() {
+            sample.speak(); // this - sample
+        }, 100);
+        setTimeout(sample.speak, 300); // this - window
+        console.log("🙃🙃🙃");
+        let god = "god";
+        god.name = "jesus";
+        speak.call(god); // undefined...
+        console.log(Object.create(null));
+        console.log("🐷🐷🐷");
+        let target = {
+                name: "target"
+            },
+            combine = {
+                age: 18
+            },
+            princess = {
+                name: "white"
+            },
+            bride = {
+                name: "bitch",
+                age: 24,
+                do: "washin'"
+            };
+        target.__proto__.cry = "tears"; // 为什么也会影响所有的对象实例，仅仅是改写了实例的原型链而已？？？==> 因为所有实例共享原型链...
+        Object.assign(target, combine, princess, bride);
+        Object.preventExtensions(target); // 仅仅禁止添加新属性，可以修改已有属性...
+        target.name = "rita";
+        target.sing = "bom";
+        Object.seal(target); // 密封之后不仅不能添加新属性，也不能重新配置或者删除任何现有属性，可以修改属性的值...
+        target.say = "english";
+        target.name = "riri";
+        Object.freeze(target); // 在密封的基础上，还不可以修改属性值...
+        target.age = 36;
+        console.log(target);
+        console.log("cry" in target); // 检测范围包括原型链...
+        console.log("📌📌📌");
+        for (const key in target) {
+            console.log(key);
+        }
+
+        function speak() {
+            console.log(this);
+            console.log(this.name);
+            console.log("···");
+        }
+    </script>
+</html>

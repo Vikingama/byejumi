@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>Deep Clone</title>
+        <style>
+            html {
+                height: 100%;
+                background: linear-gradient(
+                    -45deg,
+                    #ee7752,
+                    #e73c7e,
+                    #23a6d5,
+                    #23d5ab
+                );
+                background-size: 150% 150%;
+                animation: gradient 15s ease infinite;
+            }
+
+            body {
+                margin: 0;
+                padding: 0;
+                height: 0;
+            }
+
+            @keyframes gradient {
+                0% {
+                    background-position: 0 50%;
+                }
+
+                50% {
+                    background-position: 100% 50%;
+                }
+
+                100% {
+                    background-position: 0 50%;
+                }
+            }
+        </style>
+    </head>
+
+    <body></body>
+
+    <script>
+        // 浅拷贝
+        const a = {
+                name: "a"
+            },
+            b = Object.assign({}, a),
+            c = {
+                ...a
+            };
+        b.name = "b";
+        c.name = "c";
+        console.log(a, b, c);
+        // 深拷贝
+        const e1 = {
+                name: undefined,
+                age: 3,
+                like: {
+                    m: "elva",
+                    w: "linb"
+                }
+            },
+            /*
+            局限性：
+                会忽略 undefined
+                会忽略 symbol
+                不能序列化函数
+                不能解决循环引用的对象
+            */
+            e2 = JSON.parse(JSON.stringify(e1)),
+            e3 = {
+                a: 1,
+                b: {
+                    c: 2
+                }
+            };
+        e3.b.d = e3.b; // 循环引用
+        console.log(e2); // 没有 name 属性
+        (async () => {
+            let e = await example(e3);
+            console.log(e);
+        })();
+        try {
+            console.log(deepClone(e3));
+        } catch (e) {
+            console.info("RangeError: Maximum call stack size exceeded");
+        }
+
+        function example(obj) {
+            return new Promise(resolve => {
+                const { port1, port2 } = new MessageChannel();
+                port2.onmessage = ev => resolve(ev.data);
+                port1.postMessage(obj);
+            });
+        }
+        // 实现深拷贝，利用递归，遇到循环引用还是会死循环...
+        function deepClone(obj) {
+            function isObject(o) {
+                return (
+                    (typeof o === "object" || typeof o === "function") &&
+                    o !== null
+                );
+            }
+            if (!isObject(obj)) {
+                throw new Error("输入不正确");
+            }
+            let newObj = Array.isArray(obj) ? [...obj] : { ...obj };
+            Reflect.ownKeys(newObj).forEach(key => {
+                newObj[key] = isObject(obj[key])
+                    ? deepClone(obj[key])
+                    : obj[key];
+            });
+            return newObj;
+        }
+    </script>
+</html>
